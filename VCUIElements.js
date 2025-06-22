@@ -42,7 +42,7 @@ class UIElements_VaoCa {
 
             .VC-Vu-popup {
                 height: 250px;
-                width: 60%;
+                width: 50%;
                 background-color: rgba(255, 255, 255, 0.7);
                 border: 1px solid rgba(255, 255, 255, 0.9);
                 backdrop-filter: blur(12px) brightness(150%);
@@ -75,6 +75,7 @@ class UIElements_VaoCa {
                 width: 30px;
                 height: 30px;
                 border: none;
+                padding: 0px;
                 color: black;
                 font-size: 1.5rem;
                 cursor: pointer;
@@ -154,7 +155,7 @@ class UIElements_VaoCa {
             /* Responsive adjustments for popups */
             @media (max-width: 768px) {
                 .VC-Vu-popup {
-                    width: 90%;
+                    width: 70%;
                     padding: 15px 20px;
                 }
                 .VC-Vu-popup-buttons {
