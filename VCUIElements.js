@@ -30,7 +30,6 @@ class UIElements_VaoCa {
                 justify-content: center;
                 align-items: center;
                 z-index: 9999;
-                opacity: 0;
                 transition: opacity 0.3s ease-out;
             }
 
@@ -54,15 +53,10 @@ class UIElements_VaoCa {
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
                 text-align: center;
                 transform: scale(0.9);
-                opacity: 0;
                 transition: transform 0.3s ease-out, opacity 0.3s ease-out;
                 position: relative; 
             }
 
-            .VC-Vu-component-overlay.active .VC-Vu-popup {
-                transform: scale(1);
-                opacity: 1;
-            }
 
             .VC-Vu-popup .exitBtn {
                 position: absolute;
