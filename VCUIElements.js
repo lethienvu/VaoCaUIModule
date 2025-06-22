@@ -18,257 +18,151 @@ class UIElements_VaoCa {
     const style = document.createElement("style");
     style.id = styleId;
     style.innerHTML = `
-            /* Overlay for Popups */
-            .VC-Vu-component-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-color: rgba(0, 0, 0, 0.6);
-                display: flex; /* Always flex, control visibility with opacity/transform */
-                justify-content: center;
-                align-items: center;
-                z-index: 9999;
-                opacity: 0;
-                pointer-events: none; /* Allow clicks through when hidden */
-                transition: opacity 0.3s ease-out;
-            }
+                .VC-Vu-component-overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-color: rgba(0, 0, 0, 0.6);
+                    display: none;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 9999;
+                }
 
-            .VC-Vu-component-overlay.active {
-                opacity: 1;
-                pointer-events: all;
-            }
-
-            .VC-Vu-popup {
-                height: 250px;
-                width: 50%;
-                background-color: rgba(255, 255, 255, 0.7);
-                border: 1px solid rgba(255, 255, 255, 0.9);
-                backdrop-filter: blur(12px) brightness(150%);
-                --webkit-backdrop-filter: blur(20px);
-                border-radius: 16px;
-                padding: 20px 30px;
-                gap: 20px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-                text-align: center;
-                animation: fadeIn 0.3s ease-out;
-            }
-
-            .VC-Vu-component-overlay.active .VC-Vu-popup {
-                transform: scale(1);
-                opacity: 1;
-            }
-
-            /* Exit Button for Popups */
-            .VC-Vu-popup .exitBtn {
-                position: absolute;
-                top: 7px;
-                right: 7px;
-                box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.08);
-                background-color: rgb(255, 255, 255);
-                border-radius: 50%;
-                width: 30px;
-                height: 30px;
-                border: none;
-                padding: 0px;
-                color: black;
-                font-size: 1.5rem;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                line-height: 1; /* Adjust for better centering of 'x' */
-            }
-
-            /* Popup Icon Placeholder */
-            .Vu-VC-popup-icon {
-                transform: scale(1.5);
-                margin-top: 10px;
-                margin-bottom: 10px;
-            }
-            .Vu-VC-popup-icon svg {
-                width: 40px; /* Adjust SVG size */
-                height: 40px;
-                vertical-align: middle;
-            }
-            .Vu-VC-popup-icon path {
-                fill: #004c39; /* Default icon color */
-            }
-
-            /* Popup Text Elements */
-            .VC-Vu-popup h2 {
-                margin: 0 0 10px;
-                font-size: 1.5rem; /* Slightly larger for clarity */
-                color: #004c39;
-            }
-
-            .VC-Vu-popup p {
-                font-size: 1rem;
-                margin-bottom: 20px;
-                margin-top: 10px;
-                line-height: 1.4;
-            }
-
-            /* Popup Buttons Container */
-            .VC-Vu-popup-buttons {
-                display: flex;
-                justify-content: space-between; 
-                gap: 20px;
-                width: 100%;
-                margin-top: 10px;
-            }
-
-            /* Popup Buttons */
-            .VC-Vu-popup-buttons button {
-                padding: 10px 20px; /* Larger padding for better touch targets */
-                border: none;
-                border-radius: 30px;
-                cursor: pointer;
-                font-weight: bold;
-                width: 40%;
-                transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-            }
-
-            .VC-Vu-btn-cancel {
-                background-color: #ccc;
-                color: #333;
-            }
-            .VC-Vu-btn-cancel:hover {
-                background-color: #bbb;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-            }
-
-            .VC-Vu-btn-ok {
-                background-color: #004c39;
-                color: white;
-            }
-            .VC-Vu-btn-ok:hover {
-                background-color: #006b53;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-            }
-
-            /* Responsive adjustments for popups */
-            @media (max-width: 768px) {
                 .VC-Vu-popup {
-                    width: 70%;
-                    padding: 15px 20px;
+                    height: 250px;
+                    width: 60%;
+                    max-width: 500px;
+                    background-color: rgba(255, 255, 255, 0.7);
+                    border: 3px solid rgba(255, 255, 255, 0.9);
+                    backdrop-filter: blur(12px) brightness(150%);
+                    --webkit-backdrop-filter: blur(20px);
+                    border-radius: 30px;
+                    padding: 20px 30px;
+                    gap: 20px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                    text-align: center;
+                    animation: fadeIn 0.3s ease-out;
                 }
+
+                .VC-Vu-popup .exitBtn {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.08);
+                    background-color: rgb(255, 255, 255);
+                    border-radius: 50%;
+                    width: 30px;
+                    height: 30px;
+                    border: none;
+                    color: black;
+                    font-size: 1.5rem;
+                    cursor: pointer;
+                }
+
+                .Vu-VC-popup-icon {
+                    transform: scale(1.5);
+                }
+
+                .VC-Vu-popup h2 {
+                    margin: 0 0 10px;
+                    font-size: 1.2rem;
+                    color: #004c39;
+                }
+
+                .VC-Vu-popup p {
+                    font-size: 1rem;
+                    margin-bottom: 20px;
+                    margin-top: 10px;
+                }
+
                 .VC-Vu-popup-buttons {
-                    flex-direction: column; /* Stack buttons on small screens */
-                    gap: 10px;
-                }
-                .VC-Vu-popup-buttons button {
+                    display: flex;
+                    justify-content: flex-end;
+                    gap: 20px;
                     width: 100%;
                 }
-            }
 
-            /* Fast Alert Messages Container */
-            #vc-vu-alert-container {
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-                z-index: 10000; /* Highest z-index */
-            }
-
-            /* Base Alert Message Styling */
-            .alertFastMessgeByVu {
-                width: 320px;
-                padding: 12px;
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                justify-content: start;
-                border-radius: 50px;
-                box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
-                position: relative;
-                opacity: 0;
-                transform: translateX(100%);
-                animation: fadeInRight 0.3s ease-out forwards, fadeOut 0.5s ease-in forwards 4.5s;
-                pointer-events: all; /* Ensure clickability */
-            }
-
-            @keyframes fadeInRight {
-                from { opacity: 0; transform: translateX(100%); }
-                to { opacity: 1; transform: translateX(0); }
-            }
-
-            @keyframes fadeOut {
-                from { opacity: 1; transform: translateX(0); }
-                to { opacity: 0; transform: translateX(100%); }
-            }
-
-            .alertFastMessgeByVu .iconAlert {
-                width: 24px;
-                height: 24px;
-                margin-right: 10px;
-                flex-shrink: 0; /* Prevent icon from shrinking */
-            }
-
-            .alertFastMessgeByVu .iconAlert svg {
-                width: 100%;
-                height: 100%;
-            }
-
-            .alertFastMessgeByVu .iconAlert path {
-                fill: #fff;
-            }
-
-            .alertFastMessgeByVu.error {
-                background: #d10d0d;
-                box-shadow: 0px 2px 8px #d10d0d;
-            }
-
-            .alertFastMessgeByVu.success {
-                background: #269b24;
-                box-shadow: 0px 2px 8px #269b24;
-            }
-
-            .alertFastMessgeByVu.notice {
-                background: #509AF8;
-                box-shadow: 0px 2px 8px #509AF8;
-            }
-
-            .alertFastMessgeByVu.warning {
-                background-color: #F7C752;
-                box-shadow: 0px 2px 8px #F7C752;
-            }
-            .alertFastMessgeByVu.warning .iconAlert path {
-                fill: #333; /* Darker icon for warning */
-            }
-            .alertFastMessgeByVu.warning .alertMessage {
-                color: #333; /* Darker text for warning */
-            }
-
-            .alertMessage {
-                font-weight: 500;
-                font-size: 1rem;
-                color: #fff;
-                flex-grow: 1; /* Allow message to take available space */
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap; /* Keep message in single line */
-            }
-
-            /* Responsive for alerts */
-            @media (max-width: 480px) {
-                #vc-vu-alert-container {
-                    bottom: 10px;
-                    right: 10px;
-                    left: 10px; /* Make it full width on very small screens */
-                    align-items: center;
+                .VC-Vu-popup-buttons button {
+                    padding: 8px 20px;
+                    border: none;
+                    border-radius: 16px;
+                    cursor: pointer;
+                    font-weight: bold;
+                    width: 120px;
                 }
+
+                .VC-Vu-btn-cancel {
+                    background-color: #ccc;
+                }
+
+                .VC-Vu-btn-ok {
+                    background-color: #004c39;
+                    color: white;
+                }
+
+                @keyframes fadeIn {
+                    from {
+                        transform: scale(0.9);
+                        opacity: 0;
+                    }
+
+                    to {
+                        transform: scale(1);
+                        opacity: 1;
+                    }
+                }
+
                 .alertFastMessgeByVu {
-                    width: calc(100% - 20px); /* Adjust width to fit screen with padding */
+                    width: 80%;
+                    padding: 12px;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: start;
+                    border-radius: 50px;
+                    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+                    position: relative;
                 }
-            }
+
+                .alertFastMessgeByVu .iconAlert {
+                    width: 24px;
+                    height: 24px;
+                    margin-right: 10px
+                }
+
+                .alertFastMessgeByVu .iconAlert path {
+                    fill: #fff;
+                }
+
+                .alertFastMessgeByVu.error {
+                    background: #d10d0d;
+                }
+
+                .alertFastMessgeByVu.success {
+                    background: #269b24;
+                    box-shadow: 0px 2px 8px #269b24;
+                }
+
+                .alertFastMessgeByVu.notice {
+                    background: #509AF8;
+                }
+
+                .alertMessage {
+                    font-weight: 500;
+                    font-size: 1rem;
+                    color: #fff;
+                }
+
+                .alertFastMessgeByVu.warning {
+                    background-color: #F7C752;
+                }
         `;
     document.head.appendChild(style);
   }
