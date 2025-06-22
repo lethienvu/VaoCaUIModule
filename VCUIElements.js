@@ -261,23 +261,31 @@ class UIElements_VaoCa {
                 left: 0;
                 right: 0;
                 bottom: 0;
+                opacity: 0;
                 display: flex;
-                background-color: rgba(0, 0, 0, 0.4);
+                background-color: rgba(0, 0, 0, 0.2);
                 justify-content: center;
                 align-items: center;
                 z-index: 9999;
                 backdrop-filter: blur(4px) brightness(.9);
                 --webkit-backdrop-filter: blur(4px);
                 animation: fadeIn 0.3s ease-out;
+                color: #fff;
             }
 
-            #loadingScreen #h3 {
+            .VC-Vu-component-loading.active {
+                opacity: 1;
+                pointer-events: all;
+            }
+
+            #h3 {
                 color: white;
+                font-size: 1rem;
             }
 
             #loadingScreen #ring {
-                width: 250px;
-                height: 250px;
+                width: 200px;
+                height: 200px;
                 border: 1px solid transparent;
                 border-radius: 50%;
                 position: absolute;
