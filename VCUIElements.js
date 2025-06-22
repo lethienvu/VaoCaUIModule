@@ -7,6 +7,7 @@ class UIElements_VaoCa {
     this._injectStyles();
     this._createPopupContainers();
     this._createAlertContainer();
+    this._createLoadingScreen();
   }
 
   _injectStyles() {
@@ -253,10 +254,101 @@ class UIElements_VaoCa {
                     width: calc(100% - 20px); 
                 }
             }
+
+            .VC-Vu-component-loading {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                display: flex;
+                background-color: rgba(0, 0, 0, 0.4);
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+                backdrop-filter: blur(4px) brightness(.9);
+                --webkit-backdrop-filter: blur(4px);
+                animation: fadeIn 0.3s ease-out;
+            }
+
+            #loadingScreen #h3 {
+                color: white;
+            }
+
+            #loadingScreen #ring {
+                width: 250px;
+                height: 250px;
+                border: 1px solid transparent;
+                border-radius: 50%;
+                position: absolute;
+            }
+
+            #loadingScreen #ring:nth-child(1) {
+                border-bottom: 8px solid rgb(255, 141, 249);
+                animation: rotate1 1s linear infinite;
+            }
+
+            @keyframes rotate1 {
+                from {
+                    transform: rotateX(50deg) rotateZ(110deg);
+                }
+
+                to {
+                    transform: rotateX(50deg) rotateZ(470deg);
+                }
+            }
+
+            #loadingScreen #ring:nth-child(2) {
+                border-bottom: 8px solid rgb(255, 65, 106);
+                animation: rotate2 1s linear infinite;
+            }
+
+            @keyframes rotate2 {
+                from {
+                    transform: rotateX(20deg) rotateY(50deg) rotateZ(20deg);
+                }
+
+                to {
+                    transform: rotateX(20deg) rotateY(50deg) rotateZ(380deg);
+                }
+            }
+
+            #loadingScreen #ring:nth-child(3) {
+                border-bottom: 8px solid rgb(0, 255, 255);
+                animation: rotate3 1s linear infinite;
+            }
+
+            @keyframes rotate3 {
+                from {
+                    transform: rotateX(40deg) rotateY(130deg) rotateZ(450deg);
+                }
+
+                to {
+                    transform: rotateX(40deg) rotateY(130deg) rotateZ(90deg);
+                }
+            }
+
+            #loadingScreen #ring:nth-child(4) {
+                border-bottom: 8px solid rgb(252, 183, 55);
+                animation: rotate4 1s linear infinite;
+            }
+
+            @keyframes rotate4 {
+                from {
+                    transform: rotateX(70deg) rotateZ(270deg);
+                }
+
+                to {
+                    transform: rotateX(70deg) rotateZ(630deg);
+                }
+            }
         `;
     document.head.appendChild(style);
   }
 
+  /**
+   * Creates and appends the main popup overlay elements to the body.
+   */
   _createPopupContainers() {
     // Confirm Popup
     this.confirmPopupOverlay = document.createElement("div");
@@ -296,10 +388,31 @@ class UIElements_VaoCa {
     this._setupInfoPopupEvents(this.infoPopupOverlay);
   }
 
+  /**
+   * Creates the main container for alert messages.
+   */
   _createAlertContainer() {
     this.alertContainer = document.createElement("div");
     this.alertContainer.id = "vc-vu-alert-container";
     document.body.appendChild(this.alertContainer);
+  }
+
+  /**
+   * NEW: Creates the loading screen HTML structure.
+   */
+  _createLoadingScreen() {
+    this.loadingScreenElement = document.createElement("div");
+    this.loadingScreenElement.id = "loadingScreen";
+    this.loadingScreenElement.classList.add("VC-Vu-component-loading");
+    this.loadingScreenElement.innerHTML = `
+            <div id="ring"></div>
+            <div id="ring"></div>
+            <div id="ring"></div>
+            <div id="ring"></div>
+            <h3 id="loadingText">Đang tải...</h3> `;
+    document.body.appendChild(this.loadingScreenElement);
+    this.loadingTextElement =
+      this.loadingScreenElement.querySelector("#loadingText");
   }
 
   /**
@@ -358,6 +471,7 @@ class UIElements_VaoCa {
       if (event.target === overlay) {
         closePopup();
         if (overlay._onOkCallback) {
+          // Call onOk for info popups if defined for overlay click
           overlay._onOkCallback();
         }
       }
@@ -370,20 +484,20 @@ class UIElements_VaoCa {
   }
 
   /**
-   * Helper to show a popup overlay and apply `active` class.
-   * @param {HTMLElement} overlay - The popup overlay element.
+   * Helper to show a popup/loading overlay and apply `active` class.
+   * @param {HTMLElement} element - The overlay element (popup or loading).
    */
-  _activatePopup(overlay) {
-    overlay.classList.add("active");
+  _activateOverlay(element) {
+    element.classList.add("active");
     document.body.style.overflow = "hidden"; // Prevent scrolling
   }
 
   /**
-   * Helper to hide a popup overlay.
-   * @param {HTMLElement} overlay - The popup overlay element.
+   * Helper to hide a popup/loading overlay.
+   * @param {HTMLElement} element - The overlay element (popup or loading).
    */
-  _deactivatePopup(overlay) {
-    overlay.classList.remove("active");
+  _deactivateOverlay(element) {
+    element.classList.remove("active");
     document.body.style.overflow = ""; // Restore scrolling
   }
 
@@ -411,16 +525,14 @@ class UIElements_VaoCa {
     const btnCancel = overlay.querySelector(".vc-btn-cancel");
 
     titleEl.textContent = title;
-    contentEl.innerHTML = content; // Use innerHTML for rich content
-    iconEl.innerHTML = iconSvg; // Set SVG icon
+    contentEl.innerHTML = content;
+    iconEl.innerHTML = iconSvg;
 
-    // Store callbacks on the overlay element for event listeners
     overlay._onConfirmCallback = onConfirm;
     overlay._onCancelCallback = onCancel;
 
     const closePopup = () => {
-      this._deactivatePopup(overlay);
-      // Clear callbacks to prevent memory leaks and ensure only one call per open
+      this._deactivateOverlay(overlay);
       overlay._onConfirmCallback = null;
       overlay._onCancelCallback = null;
     };
@@ -435,7 +547,7 @@ class UIElements_VaoCa {
       closePopup();
     };
 
-    this._activatePopup(overlay);
+    this._activateOverlay(overlay);
   }
 
   /**
@@ -459,13 +571,13 @@ class UIElements_VaoCa {
     const btnOK = overlay.querySelector(".vc-btn-ok");
 
     titleEl.textContent = title;
-    contentEl.innerHTML = content; // Use innerHTML for rich content
-    iconEl.innerHTML = iconSvg; // Set SVG icon
+    contentEl.innerHTML = content;
+    iconEl.innerHTML = iconSvg;
 
     overlay._onOkCallback = onOk;
 
     const closePopup = () => {
-      this._deactivatePopup(overlay);
+      this._deactivateOverlay(overlay);
       overlay._onOkCallback = null;
     };
 
@@ -474,7 +586,7 @@ class UIElements_VaoCa {
       closePopup();
     };
 
-    this._activatePopup(overlay);
+    this._activateOverlay(overlay);
   }
 
   /**
@@ -510,7 +622,7 @@ class UIElements_VaoCa {
 
     // Remove the alert after its duration
     setTimeout(() => {
-      alertElement.style.animation = `fadeOut 0.5s ease-in forwards`; // Trigger fade out animation
+      alertElement.style.animation = `fadeOut 0.5s ease-in forwards`;
       alertElement.addEventListener(
         "animationend",
         (event) => {
@@ -522,6 +634,25 @@ class UIElements_VaoCa {
       );
     }, duration);
   }
+
+  /**
+   * Shows the loading screen with an optional custom message.
+   * @param {string} [message="Đang tải..."] - The message to display on the loading screen.
+   */
+  showLoading(message = "Đang tải...") {
+    if (this.loadingTextElement) {
+      this.loadingTextElement.textContent = message;
+    }
+    this._activateOverlay(this.loadingScreenElement);
+  }
+
+  /**
+   * Hides the loading screen.
+   */
+  hideLoading() {
+    this._deactivateOverlay(this.loadingScreenElement);
+  }
 }
 
+// Export a singleton instance of the UIElements class
 export const uiManager = new UIElements_VaoCa();
