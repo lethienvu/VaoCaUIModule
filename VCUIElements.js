@@ -26,17 +26,16 @@ class UIElements_VaoCa {
                 right: 0;
                 bottom: 0;
                 background-color: rgba(0, 0, 0, 0.6);
-                display: flex; 
+                display: none; 
                 justify-content: center;
                 align-items: center;
                 z-index: 9999;
-                opacity: 0;
                 pointer-events: none; 
                 transition: opacity 0.3s ease-out;
             }
 
             .VC-Vu-component-overlay.active {
-                opacity: 1;
+                display: flex;
                 pointer-events: all;
             }
 
@@ -261,8 +260,7 @@ class UIElements_VaoCa {
                 left: 0;
                 right: 0;
                 bottom: 0;
-                opacity: 0;
-                display: flex;
+                display: none;
                 background-color: rgba(0, 0, 0, 0.2);
                 justify-content: center;
                 align-items: center;
@@ -274,7 +272,7 @@ class UIElements_VaoCa {
             }
 
             .VC-Vu-component-loading.active {
-                opacity: 1;
+                display: flex;
                 pointer-events: all;
             }
 
