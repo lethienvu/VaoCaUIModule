@@ -67,17 +67,18 @@ class UIElements_VaoCa {
 
             .VC-Vu-popup .exitBtn {
                 position: absolute;
-        top: 10px;
-        right: 10px;
-        box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.08);
-        background-color: rgb(255, 255, 255);
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-        border: none;
-        color: black;
-        font-size: 1.5rem;
-        cursor: pointer;
+                top: 10px;
+                right: 10px;
+                box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.08);
+                background-color: rgb(255, 255, 255);
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
+                border: none;
+                color: black;
+                font-size: 1.2rem;
+                cursor: pointer;
+                padding: 0px !important;
             }
 
             .Vu-VC-popup-icon {
@@ -96,7 +97,7 @@ class UIElements_VaoCa {
 
             .VC-Vu-popup h2 {
                 margin: 0 0 10px;
-                font-size: 1.5rem; 
+                font-size: 1.2rem; 
                 color: #004c39;
             }
 
@@ -109,7 +110,7 @@ class UIElements_VaoCa {
 
             .VC-Vu-popup-buttons {
                 display: flex;
-                justify-content: center; /* Center buttons */
+                justify-content: center; 
                 gap: 20px;
                 width: 100%;
                 margin-top: 10px;
