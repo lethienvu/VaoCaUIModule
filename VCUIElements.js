@@ -116,7 +116,7 @@ class UIElements_VaoCa {
             /* Popup Buttons Container */
             .VC-Vu-popup-buttons {
                 display: flex;
-                justify-content: center; /* Center buttons */
+                justify-content: space-between; 
                 gap: 20px;
                 width: 100%;
                 margin-top: 10px;
@@ -126,10 +126,10 @@ class UIElements_VaoCa {
             .VC-Vu-popup-buttons button {
                 padding: 10px 20px; /* Larger padding for better touch targets */
                 border: none;
-                border-radius: 16px;
+                border-radius: 30px;
                 cursor: pointer;
                 font-weight: bold;
-                width: 120px;
+                width: 40%;
                 transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
             }
 
