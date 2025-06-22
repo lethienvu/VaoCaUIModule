@@ -41,9 +41,8 @@ class UIElements_VaoCa {
             }
 
             .VC-Vu-popup {
-                width: 200px;
                 height: 250px;
-                width: 50%;
+                width: 60%;
                 background-color: rgba(255, 255, 255, 0.7);
                 border: 1px solid rgba(255, 255, 255, 0.9);
                 backdrop-filter: blur(12px) brightness(150%);
