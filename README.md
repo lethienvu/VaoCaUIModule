@@ -7,7 +7,7 @@ Library UI Elements Use For VaoCa mobile application
 Use ES Modules:
 
 <script type="module" defer>
-        import { uiManager } from 'https://cdn.jsdelivr.net/gh/lethienvu/VaoCaUIModule@14dea74/VCUIElements.js';
+        import { uiManager } from 'https://cdn.jsdelivr.net/gh/lethienvu/VaoCaUIModule/VCUIElements.js';
 </script>
 <script>
             // Confirm Popup Button
