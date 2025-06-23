@@ -79,7 +79,7 @@ class UIElements_VaoCa {
             }
 
             .Vu-VC-popup-icon {
-                transform: scale(1.5);
+                transform: scale(1.2);
                 margin-top: 10px;
                 margin-bottom: 10px;
             }
@@ -87,9 +87,6 @@ class UIElements_VaoCa {
                 width: 80px; 
                 height: auto;
                 vertical-align: middle;
-            }
-            .Vu-VC-popup-icon path {
-                fill: #004c39; 
             }
 
             .VC-Vu-popup h2 {
