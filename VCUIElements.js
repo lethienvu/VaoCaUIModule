@@ -31,7 +31,7 @@ class UIElements_VaoCa {
                 display: none;
                 justify-content: center;
                 align-items: center;
-                z-index: 500;
+                z-index: 9950;
                 transition: opacity 0.3s ease-out;
             }
 
