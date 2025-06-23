@@ -25,7 +25,9 @@ class UIElements_VaoCa {
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background-color: rgba(0, 0, 0, 0.6);
+                background-color: rgba(0, 0, 0, 0.3);
+                backdrop-filter: blur(2px);
+                -webkit-backdrop-filter: blur(2px);
                 display: none;
                 justify-content: center;
                 align-items: center;
@@ -41,10 +43,10 @@ class UIElements_VaoCa {
                 width: 80%; 
                 max-width: 450px; 
                 min-width: 350px; 
-                background-color: rgba(255, 255, 255, 0.4);
+                background-color: rgba(255, 255, 255, 0.7);
                 border: 1px solid rgba(255, 255, 255, 0.9);
-                backdrop-filter: blur(12px) brightness(150%);
-                -webkit-backdrop-filter: blur(12px);
+                backdrop-filter: blur(20px) brightness(150%);
+                -webkit-backdrop-filter: blur(20px);
                 border-radius: 30px;
                 padding: 3rem 1.5rem;
                 padding-bottom: 1.5rem;
@@ -92,7 +94,8 @@ class UIElements_VaoCa {
 
             .VC-Vu-popup h2 {
                 margin: 0 0 1rem;
-                font-size: 1.4rem; 
+                font-size: 1.2rem; 
+                font-weight: bold;
                 color: #004c39;
             }
 
