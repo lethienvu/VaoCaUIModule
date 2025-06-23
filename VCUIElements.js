@@ -29,7 +29,7 @@ class UIElements_VaoCa {
                 display: none;
                 justify-content: center;
                 align-items: center;
-                z-index: 9999;
+                z-index: 500;
                 transition: opacity 0.3s ease-out;
             }
 
@@ -46,18 +46,17 @@ class UIElements_VaoCa {
                 backdrop-filter: blur(12px) brightness(150%);
                 -webkit-backdrop-filter: blur(12px);
                 border-radius: 30px;
-                padding: 3rem 2rem;
-                padding-bottom: 2rem;
-                padding-top: 30px;
+                padding: 3rem 1.5rem;
+                padding-bottom: 1.5rem;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
                 text-align: center;
-                transform: scale(0.9);
                 transition: transform 0.3s ease-out, opacity 0.3s ease-out;
                 position: relative; 
+                z-index: 9999;
             }
 
 
@@ -99,8 +98,8 @@ class UIElements_VaoCa {
 
             .VC-Vu-popup p {
                 font-size: 0.8rem;
-                margin-bottom: 1.5rem;
-                margin-top: 1rem;
+                margin-top: 2rem;
+                margin-bottom: 0.5rem;
                 line-height: 1.4;
             }
 
@@ -113,7 +112,7 @@ class UIElements_VaoCa {
             }
 
             .VC-Vu-popup-buttons button {
-                padding: 10px 20px;
+                padding: 0.5rem 2rem;
                 border: none;
                 border-radius: 30px;
                 cursor: pointer;
