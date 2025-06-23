@@ -94,7 +94,7 @@ class UIElements_VaoCa {
 
             .VC-Vu-popup h2 {
                 margin: 0 0 1rem;
-                font-size: 1.2rem; 
+                font-size: 1.1rem; 
                 font-weight: bold;
                 color: #004c39;
             }
@@ -270,9 +270,10 @@ class UIElements_VaoCa {
                 display: flex;
             }
 
-            #h3 {
+            #loadingText {
                 color: white;
                 font-size: 1rem;
+                font-weight: bold;
             }
 
             #loadingScreen #ring {
