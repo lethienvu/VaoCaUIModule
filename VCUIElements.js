@@ -38,14 +38,17 @@ class UIElements_VaoCa {
             }
 
             .VC-Vu-popup {
-                width: 50%; 
-                max-width: 400px; 
-                background-color: rgba(255, 255, 255, 0.7);
+                width: 80%; 
+                max-width: 450px; 
+                min-width: 350px; 
+                background-color: rgba(255, 255, 255, 0.4);
                 border: 1px solid rgba(255, 255, 255, 0.9);
                 backdrop-filter: blur(12px) brightness(150%);
-                -webkit-backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(12px);
                 border-radius: 30px;
-                padding: 20px 30px;
+                padding: 3rem 2rem;
+                padding-bottom: 2rem;
+                padding-top: 30px;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
@@ -89,15 +92,15 @@ class UIElements_VaoCa {
             }
 
             .VC-Vu-popup h2 {
-                margin: 0 0 10px;
-                font-size: 1.2rem; 
+                margin: 0 0 1rem;
+                font-size: 1.4rem; 
                 color: #004c39;
             }
 
             .VC-Vu-popup p {
-                font-size: 1rem;
-                margin-bottom: 20px;
-                margin-top: 10px;
+                font-size: 0.8rem;
+                margin-bottom: 1.5rem;
+                margin-top: 1rem;
                 line-height: 1.4;
             }
 
@@ -117,6 +120,7 @@ class UIElements_VaoCa {
                 font-weight: bold;
                 width: 40%;
                 transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+                font-size: 1rem;
             }
 
             .VC-Vu-btn-cancel {
@@ -139,10 +143,6 @@ class UIElements_VaoCa {
 
             /* Responsive adjustments for popups */
             @media (max-width: 768px) {
-                .VC-Vu-popup {
-                    width: 60%;
-                    padding: 15px 20px;
-                }
                 .VC-Vu-popup-buttons button {
                     width: 100%;
                 }
