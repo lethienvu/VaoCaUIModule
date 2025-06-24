@@ -203,11 +203,11 @@ const CameraModule = (() => {
         }
 
         .vu-camera-app-container .vu-qr-frame {
-            width: 80%;
-            height: calc(100% - 17rem);
+            width: 90%;
+            height: calc(100% - 19rem);
             position: relative;
             box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
-            border-radius: 2rem;
+            border-radius: 4rem;
         }
 
         .vu-camera-app-container .vu-corner {
@@ -261,7 +261,8 @@ const CameraModule = (() => {
             flex-direction: column;
             align-items: center;
             width: 100%;
-            height: 6rem;
+            margin-top: 1rem;
+            height: 11rem;
         }
 
         /* Text elements - not directly used in this version but kept for future use */
@@ -323,7 +324,7 @@ const CameraModule = (() => {
             justify-content: center;
             background-color: transparent;
             margin-top: -3rem;
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
             padding: 0;
             position: relative;
             z-index: 2001;
