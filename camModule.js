@@ -171,14 +171,20 @@ const CameraModule = (() => {
         }
 
         .vu-camera-app-container {
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            display: none;
-            transform: scaleX(-1);
-            object-fit: cover;
-            filter: brightness(0.8);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            max-width: none;
+            margin: 0;
+            padding: 0;
+            z-index: 9999;
+            background-color: rgba(0, 0, 0, .2);
+            display: none; /* Mặc định ẩn */
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
@@ -201,11 +207,13 @@ const CameraModule = (() => {
         }
 
         .vu-camera-app-container .vu-camera-feed {
-            width: 100%; /* Đặt chiều rộng 100% của container */
-            height: 100%; /* Đặt chiều cao 100% của container */
-            display: block; /* HIỂN THỊ VIDEO FEED */
-            transform: scaleX(-1); /* Lật ngang để giống gương (vẫn cần cho canvas) */
-            object-fit: contain; /* Chứa video trong khung mà không cắt xén, có thể có khoảng đen */
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            display: none; /* Ẩn cho đến khi stream sẵn sàng */
+            transform: scaleX(-1); /* Lật ngang để giống gương */
+            object-fit: cover;
             filter: brightness(0.8);
         }
 
@@ -216,7 +224,7 @@ const CameraModule = (() => {
             padding: 15px 20px;
             position: relative;
             z-index: 3;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0));
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
             padding-top: calc(15px + env(safe-area-inset-top));
             height: 3rem;
         }
@@ -270,17 +278,17 @@ const CameraModule = (() => {
 
         .vu-camera-app-container .vu-qr-frame {
             width: 80%;
-            height: calc(100% - 19rem);
+            height: calc(100% - 17rem);
             position: relative;
             box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
-            border-radius: 3rem;
+            border-radius: 2rem;
         }
 
         .vu-camera-app-container .vu-corner {
             position: absolute;
-            width: 1.2rem;
-            height: 1.2rem;
-            border: 2px solid #fff;
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid #fff;
             box-sizing: border-box;
         }
 
@@ -327,8 +335,7 @@ const CameraModule = (() => {
             flex-direction: column;
             align-items: center;
             width: 100%;
-            height: 11rem;
-            margin-top: 1rem;
+            height: 6rem;
         }
 
         /* Text elements - not directly used in this version but kept for future use */
@@ -390,7 +397,7 @@ const CameraModule = (() => {
             justify-content: center;
             background-color: transparent;
             margin-top: -3rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             padding: 0;
             position: relative;
             z-index: 2001;
