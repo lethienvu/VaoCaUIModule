@@ -1,14 +1,63 @@
-// cameraModule.js
+// app.js
 
 // Hàm để thêm CSS vào head của tài liệu
 function addModuleCss() {
+    // Nếu chưa có thẻ head, tạo nó
+    let head = document.head || document.getElementsByTagName('head')[0];
+    if (!head) {
+        head = document.createElement('head');
+        document.documentElement.prepend(head); // Thêm head vào đầu tài liệu
+    }
+
     if (document.getElementById('cameraModuleStyle')) {
         return; // Đã thêm rồi
     }
     const styleTag = document.createElement('style');
     styleTag.id = 'cameraModuleStyle';
     styleTag.textContent = `
-        /* Quan trọng: #cameraAppContainer sẽ chiếm toàn màn hình và luôn nằm trên */
+        /* CSS cho body và các phần tử gốc */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Ngăn cuộn của trang chính */
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0; /* Nền của trang chính */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Canh giữa nút mở camera */
+        }
+
+        /* Nút để mở camera */
+        #openCameraButton {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 50px;
+            z-index: 100;
+        }
+
+        #openCameraButton:hover {
+            background-color: #0056b3;
+        }
+
+        /* CSS cho ảnh đã chụp (hiển thị trên trang chính) */
+        #capturedPhotoDisplay {
+            margin-top: 20px;
+            max-width: 90%;
+            height: auto;
+            border: 2px solid #ddd;
+            display: none; /* Ẩn ban đầu */
+            z-index: 10;
+        }
+
+        /* === CSS cho Giao Diện Camera (sẽ nằm trong #cameraAppContainer) === */
         #cameraAppContainer {
             position: fixed;
             top: 0;
@@ -24,15 +73,13 @@ function addModuleCss() {
             flex-direction: column;
             justify-content: space-between;
             overflow: hidden;
-            -webkit-font-smoothing: antialiased; /* Làm mịn font trên Webkit */
-            -moz-osx-font-smoothing: grayscale; /* Làm mịn font trên Firefox */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         #cameraAppContainer.active {
-            display: flex; /* Hiện khi module được kích hoạt */
+            display: flex;
         }
-
-        /* CSS cho các phần tử con bên trong #cameraAppContainer */
 
         #cameraAppContainer .camera-feed-container {
             position: absolute;
@@ -52,7 +99,7 @@ function addModuleCss() {
             min-height: 100%;
             width: auto;
             height: auto;
-            display: none; /* Ẩn ban đầu */
+            display: none;
             transform: scaleX(-1);
             object-fit: cover;
             filter: brightness(0.8);
@@ -87,7 +134,7 @@ function addModuleCss() {
             gap: 8px;
             font-size: 16px;
             font-weight: bold;
-            color: #fff; /* Đảm bảo màu chữ là trắng */
+            color: #fff;
             cursor: pointer;
         }
 
@@ -170,7 +217,7 @@ function addModuleCss() {
             font-size: 20px;
             font-weight: bold;
             margin-bottom: 5px;
-            color: #fff; /* Đảm bảo màu chữ là trắng */
+            color: #fff;
         }
 
         #cameraAppContainer .supported-services {
@@ -250,12 +297,21 @@ function addModuleCss() {
             background-color: rgba(255, 255, 255, 0.1);
         }
     `;
-    document.head.appendChild(styleTag);
+    head.appendChild(styleTag);
+
+    // Thêm link Font Awesome nếu chưa có
+    if (!document.querySelector('link[href*="font-awesome"]')) {
+        const faLink = document.createElement('link');
+        faLink.rel = 'stylesheet';
+        faLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css';
+        head.appendChild(faLink);
+    }
 }
 
 // Hàm để tạo và trả về phần tử HTML của giao diện camera
-function createCameraAppHtmlElements() {
-    const fragment = document.createDocumentFragment();
+function createCameraAppHtmlElements(containerId) {
+    const container = document.createElement('div');
+    container.id = containerId;
 
     // Camera Feed Container
     const cameraFeedContainer = document.createElement('div');
@@ -265,7 +321,7 @@ function createCameraAppHtmlElements() {
     video.autoplay = true;
     video.playsInline = true;
     cameraFeedContainer.appendChild(video);
-    fragment.appendChild(cameraFeedContainer);
+    container.appendChild(cameraFeedContainer);
 
     // Header
     const header = document.createElement('header');
@@ -300,7 +356,7 @@ function createCameraAppHtmlElements() {
     flashIcon.className = 'fas fa-bolt';
     headerRight.appendChild(flashIcon);
     header.appendChild(headerRight);
-    fragment.appendChild(header);
+    container.appendChild(header);
 
     // QR Scan Overlay
     const qrOverlay = document.createElement('div');
@@ -313,7 +369,7 @@ function createCameraAppHtmlElements() {
         qrFrame.appendChild(corner);
     });
     qrOverlay.appendChild(qrFrame);
-    fragment.appendChild(qrOverlay);
+    container.appendChild(qrOverlay);
 
     // Bottom Content
     const bottomContent = document.createElement('div');
@@ -344,7 +400,7 @@ function createCameraAppHtmlElements() {
     takePhotoButton.className = 'take-photo-button';
     takePhotoButton.innerHTML = '<i class="fas fa-camera"></i> Chụp ảnh';
     bottomContent.appendChild(takePhotoButton);
-    fragment.appendChild(bottomContent);
+    container.appendChild(bottomContent);
 
     // Navigation Bar
     const navbar = document.createElement('nav');
@@ -359,41 +415,78 @@ function createCameraAppHtmlElements() {
     navButton2.className = 'nav-button';
     navButton2.innerHTML = '<i class="fas fa-money-bill-wave"></i> Mã nhận tiền';
     navbar.appendChild(navButton2);
-    fragment.appendChild(navbar);
+    container.appendChild(navbar);
 
     // Canvas cho chụp ảnh
     const photoCanvas = document.createElement('canvas');
     photoCanvas.id = 'photoCanvas';
     photoCanvas.style.display = 'none';
-    fragment.appendChild(photoCanvas);
+    container.appendChild(photoCanvas);
 
-    return fragment;
+    return container;
 }
 
-// Export một function để khởi tạo và điều khiển module
-export function initCameraModule(containerId, options = {}) {
-    const container = document.getElementById(containerId);
-    if (!container) {
-        console.error(`Container with ID "${containerId}" not found.`);
-        return;
+
+// --- Logic Camera Module ---
+
+let currentCameraModule = null; // Biến để lưu trữ thể hiện của module camera
+
+/**
+ * Hàm chính để khởi tạo và điều khiển giao diện camera.
+ * @param {object} options - Đối tượng chứa các callback.
+ * - onOpen: Hàm được gọi khi giao diện camera mở.
+ * - onClose: Hàm được gọi khi giao diện camera đóng.
+ * - onPhotoTaken: Hàm được gọi khi ảnh được chụp, nhận Base64 của ảnh.
+ * - onPhotoLoaded: Hàm được gọi khi ảnh được tải từ máy, nhận Base64 của ảnh.
+ * @returns {object} Các hàm công khai (start, stop, takePhoto) để điều khiển module.
+ */
+export function createCameraApp(options = {}) {
+    // Nếu đã có một module camera đang hoạt động, trả về nó
+    if (currentCameraModule) {
+        console.warn("Một module camera đã tồn tại. Vui lòng gọi .stop() trước khi tạo lại.");
+        return currentCameraModule;
+    }
+
+    // Đảm bảo DOM cơ bản (head, body) tồn tại
+    if (!document.documentElement) {
+        document.appendChild(document.createElement('html'));
+    }
+    if (!document.head) {
+        document.documentElement.appendChild(document.createElement('head'));
+    }
+    if (!document.body) {
+        document.documentElement.appendChild(document.createElement('body'));
     }
 
     // Thêm CSS vào tài liệu
     addModuleCss();
 
-    // Thêm các phần tử HTML vào container
-    container.appendChild(createCameraAppHtmlElements());
+    // Tạo container cho ứng dụng camera và thêm vào body
+    const cameraAppContainerId = 'cameraAppContainer';
+    const cameraAppContainer = createCameraAppHtmlElements(cameraAppContainerId);
+    document.body.appendChild(cameraAppContainer);
+
+    // Tạo nút "Mở Giao Diện Camera" và thẻ img hiển thị ảnh đã chụp
+    const openCameraButton = document.createElement('button');
+    openCameraButton.id = 'openCameraButton';
+    openCameraButton.textContent = 'Mở Giao Diện Camera';
+    document.body.prepend(openCameraButton); // Thêm vào đầu body
+
+    const capturedPhotoDisplay = document.createElement('img');
+    capturedPhotoDisplay.id = 'capturedPhotoDisplay';
+    capturedPhotoDisplay.alt = 'Ảnh đã chụp';
+    capturedPhotoDisplay.style.display = 'none';
+    document.body.appendChild(capturedPhotoDisplay); // Thêm vào body
 
     // Lấy các phần tử DOM sau khi chúng đã được thêm vào container
-    const cameraFeed = container.querySelector('#cameraFeed');
-    const uploadButton = container.querySelector('.upload-button');
-    const imageUploadInput = container.querySelector('#imageUpload');
-    const flashButton = container.querySelector('.header-right .fas.fa-bolt');
-    const backButton = container.querySelector('#backButton');
-    const takePhotoButton = container.querySelector('.take-photo-button');
-    const photoCanvas = container.querySelector('#photoCanvas');
+    const cameraFeed = cameraAppContainer.querySelector('#cameraFeed');
+    const uploadButton = cameraAppContainer.querySelector('.upload-button');
+    const imageUploadInput = cameraAppContainer.querySelector('#imageUpload');
+    const flashButton = cameraAppContainer.querySelector('.header-right .fas.fa-bolt');
+    const backButton = cameraAppContainer.querySelector('#backButton');
+    const takePhotoButton = cameraAppContainer.querySelector('.take-photo-button');
+    const photoCanvas = cameraAppContainer.querySelector('#photoCanvas');
     const photoContext = photoCanvas.getContext('2d');
-    const capturedPhotoDisplay = document.getElementById('capturedPhotoDisplay'); // Lấy từ DOM chính
 
     let stream = null;
     let track = null;
@@ -401,7 +494,8 @@ export function initCameraModule(containerId, options = {}) {
 
     // Hàm để mở camera và hiển thị trên giao diện
     async function startCamera() {
-        container.classList.add('active'); // Hiển thị container
+        cameraAppContainer.classList.add('active'); // Hiển thị container
+        openCameraButton.style.display = 'none'; // Ẩn nút mở
         if (options.onOpen) options.onOpen(); // Callback khi mở
 
         try {
@@ -428,7 +522,6 @@ export function initCameraModule(containerId, options = {}) {
 
             cameraFeed.onloadedmetadata = () => {
                 cameraFeed.play();
-                // Ẩn ảnh đã chụp nếu có
                 if (capturedPhotoDisplay) capturedPhotoDisplay.style.display = 'none';
             };
 
@@ -438,13 +531,14 @@ export function initCameraModule(containerId, options = {}) {
             cameraFeed.style.display = 'none';
             flashButton.style.display = 'none';
 
-            // Nếu lỗi, ẩn lại container và gọi callback đóng
-            container.classList.remove('active');
+            // Nếu lỗi, ẩn lại container và hiện nút mở
+            cameraAppContainer.classList.remove('active');
+            openCameraButton.style.display = 'block';
             if (options.onClose) options.onClose();
         }
     }
 
-    // Hàm để dừng camera
+    // Hàm để dừng camera và gỡ bỏ giao diện
     function stopCamera() {
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
@@ -457,7 +551,32 @@ export function initCameraModule(containerId, options = {}) {
             flashEnabled = false;
             console.log("Camera đã được dừng.");
         }
-        container.classList.remove('active'); // Ẩn container
+        cameraAppContainer.classList.remove('active'); // Ẩn container
+
+        // Gỡ bỏ các phần tử DOM liên quan đến module khi đóng
+        if (cameraAppContainer.parentNode) {
+            cameraAppContainer.parentNode.removeChild(cameraAppContainer);
+        }
+        if (openCameraButton.parentNode) {
+            openCameraButton.parentNode.removeChild(openCameraButton);
+        }
+        if (capturedPhotoDisplay.parentNode) {
+            capturedPhotoDisplay.parentNode.removeChild(capturedPhotoDisplay);
+        }
+        
+        // Gỡ bỏ style tag nếu muốn
+        const styleTag = document.getElementById('cameraModuleStyle');
+        if (styleTag && styleTag.parentNode) {
+            styleTag.parentNode.removeChild(styleTag);
+        }
+        // Gỡ bỏ Font Awesome link nếu muốn và nếu không có component nào khác dùng nó
+        const faLink = document.querySelector('link[href*="font-awesome"]');
+        if (faLink && faLink.parentNode) {
+             // Cần kiểm tra kỹ xem có component nào khác dùng FA không trước khi gỡ
+            faLink.parentNode.removeChild(faLink);
+        }
+
+        currentCameraModule = null; // Reset biến thể hiện
         if (options.onClose) options.onClose(); // Callback khi đóng
     }
 
@@ -486,24 +605,18 @@ export function initCameraModule(containerId, options = {}) {
             return null;
         }
 
-        // Đảm bảo canvas có cùng kích thước với video stream
         photoCanvas.width = cameraFeed.videoWidth;
         photoCanvas.height = cameraFeed.videoHeight;
-
-        // Vẽ frame hiện tại của video lên canvas
         photoContext.drawImage(cameraFeed, 0, 0, photoCanvas.width, photoCanvas.height);
-
-        // Lấy dữ liệu ảnh dưới dạng URL Base64 (PNG)
         const imageDataURL = photoCanvas.toDataURL('image/png');
         console.log("Ảnh đã được chụp và chuyển thành Base64.");
 
-        // Hiển thị ảnh đã chụp (nếu có phần tử hiển thị)
         if (capturedPhotoDisplay) {
             capturedPhotoDisplay.src = imageDataURL;
             capturedPhotoDisplay.style.display = 'block';
         }
 
-        if (options.onPhotoTaken) options.onPhotoTaken(imageDataURL); // Callback khi chụp ảnh
+        if (options.onPhotoTaken) options.onPhotoTaken(imageDataURL);
 
         return imageDataURL;
     }
@@ -520,7 +633,6 @@ export function initCameraModule(containerId, options = {}) {
             const reader = new FileReader();
             reader.onload = (e) => {
                 if (options.onPhotoLoaded) options.onPhotoLoaded(e.target.result);
-                // Hiển thị ảnh đã tải lên (nếu có phần tử hiển thị)
                 if (capturedPhotoDisplay) {
                     capturedPhotoDisplay.src = e.target.result;
                     capturedPhotoDisplay.style.display = 'block';
@@ -533,7 +645,7 @@ export function initCameraModule(containerId, options = {}) {
     });
     takePhotoButton.addEventListener('click', takePhotoToBase64);
 
-    const navButtons = container.querySelectorAll('.nav-button');
+    const navButtons = cameraAppContainer.querySelectorAll('.nav-button');
     navButtons.forEach(button => {
         button.addEventListener('click', () => {
             navButtons.forEach(btn => btn.classList.remove('active'));
@@ -542,42 +654,37 @@ export function initCameraModule(containerId, options = {}) {
         });
     });
 
-    // Trả về các hàm điều khiển công khai
-    return {
+    // Gán sự kiện cho nút "Mở Giao Diện Camera" được tạo động
+    openCameraButton.addEventListener('click', startCamera);
+
+    // Lưu thể hiện module vào biến toàn cục
+    currentCameraModule = {
         start: startCamera,
         stop: stopCamera,
-        takePhoto: takePhotoToBase64 // Hàm chụp ảnh và trả về Base64
+        takePhoto: takePhotoToBase64
     };
+
+    return currentCameraModule;
 }
 
-// Lắng nghe sự kiện click từ bên ngoài để khởi tạo và gọi hàm start
+// Tự động khởi tạo ứng dụng khi DOM đã tải hoàn chỉnh
 document.addEventListener('DOMContentLoaded', () => {
-    const openCameraButton = document.getElementById('openCameraButton');
-    const cameraAppContainer = document.getElementById('cameraAppContainer');
-
-    // Khởi tạo module khi DOM đã tải hoàn chỉnh
-    const cameraControl = initCameraModule('cameraAppContainer', {
-        onOpen: () => {
-            openCameraButton.style.display = 'none';
-        },
-        onClose: () => {
-            openCameraButton.style.display = 'block';
-        },
-        onPhotoTaken: (base64Image) => {
-            console.log("Ảnh Base64 đã được gửi từ module (chụp):", base64Image.substring(0, 50) + "...");
-        },
-        onPhotoLoaded: (base64Image) => {
-            console.log("Ảnh Base64 đã được gửi từ module (tải từ máy):", base64Image.substring(0, 50) + "...");
-        }
-    });
-
-    // Gán sự kiện click cho nút "Mở Giao Diện Camera" để khởi động module
-    openCameraButton.addEventListener('click', () => {
-        cameraControl.start();
-    });
-
-    // Dừng camera khi người dùng rời khỏi trang
-    window.addEventListener('beforeunload', () => {
-        cameraControl.stop();
-    });
+    // Chỉ tạo ứng dụng nếu nó chưa được tạo
+    if (!document.getElementById('cameraAppContainer')) {
+        createCameraApp({
+            onOpen: () => {
+                console.log("Giao diện camera đã mở.");
+            },
+            onClose: () => {
+                console.log("Giao diện camera đã đóng.");
+            },
+            onPhotoTaken: (base64Image) => {
+                console.log("Ảnh Base64 đã chụp:", base64Image.substring(0, 50) + "...");
+                // Bạn có thể gửi base64Image này lên server hoặc xử lý tiếp
+            },
+            onPhotoLoaded: (base64Image) => {
+                console.log("Ảnh Base64 đã tải từ máy:", base64Image.substring(0, 50) + "...");
+            }
+        });
+    }
 });
