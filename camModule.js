@@ -174,7 +174,7 @@ const CameraModule = (() => {
             top: 0;
             left: 0;
             width: 100vw;
-            height: 95vh;
+            height: 96vh;
             max-width: none;
             margin: 0;
             padding: 0;
