@@ -25,7 +25,7 @@ const CameraModule = (() => {
     let _cameraAppContainer = null;
     let _takePhotoButton = null;
     let _backButton = null;
-    let _switchCameraButton = null; // Nút chuyển đổi camera (trước/sau)
+    let _switchCameraButton = null; // Nút chuyển đổi camera (trước/sau)//////
 
     // --- HTML và CSS mẫu được nhúng ---
     // Đây là toàn bộ cấu trúc HTML cho giao diện camera
