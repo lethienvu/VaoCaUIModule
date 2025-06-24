@@ -25,7 +25,7 @@ class UIElements_VaoCa {
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background-color: rgba(0, 0, 0, 0.3);
+                background-color: rgba(0, 0, 0, 0.2);
                 backdrop-filter: blur(1px);
                 -webkit-backdrop-filter: blur(1px);
                 display: none;
@@ -45,8 +45,8 @@ class UIElements_VaoCa {
                 min-width: 350px; 
                 background-color: rgba(255, 255, 255, 0.9);
                 border: 1px solid rgba(255, 255, 255, 1);
-                backdrop-filter: blur(12px) brightness(150%);
-                -webkit-backdrop-filter: blur(12px);
+                backdrop-filter: blur(8px) brightness(150%);
+                -webkit-backdrop-filter: blur(8px);
                 border-radius: 30px;
                 padding: 3rem 1.5rem;
                 padding-bottom: 1.5rem;
@@ -112,7 +112,7 @@ class UIElements_VaoCa {
             }
 
             .VC-Vu-popup-buttons button {
-                padding: 0.5rem 2rem;
+                padding: 0.4rem 2rem;
                 border: none;
                 border-radius: 30px;
                 cursor: pointer;
@@ -252,13 +252,13 @@ class UIElements_VaoCa {
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background-color: rgba(0, 0, 0, 0.2);
+                background-color: rgba(0, 0, 0, 0.1);
                 justify-content: center;
                 align-items: center;
                 display: none;
                 z-index: 9999;
-                backdrop-filter: blur(4px) brightness(.9);
-                --webkit-backdrop-filter: blur(4px);
+                backdrop-filter: blur(2px) brightness(1.2);
+                --webkit-backdrop-filter: blur(2px);
                 animation: fadeIn 0.3s ease-out;
                 color: #fff;
             }
@@ -274,9 +274,9 @@ class UIElements_VaoCa {
             }
 
             #loadingScreen #ring {
-                width: 200px;
-                height: 200px;
-                border: 1px solid transparent;
+                width: 260px;
+                height: 260px;
+                border: 3px solid transparent;
                 border-radius: 50%;
                 position: absolute;
             }
