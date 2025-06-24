@@ -1,577 +1,640 @@
-function addModuleCss() {
-    let head = document.head || document.getElementsByTagName('head')[0];
-    if (!head) {
-        head = document.createElement('head');
-        document.documentElement.prepend(head);
-    }
+/**
+ * CameraModule.js
+ *
+ * Một module JavaScript độc lập để chụp ảnh trên trình duyệt,
+ * bao gồm giao diện người dùng HTML và CSS được nhúng.
+ * Module này cung cấp khả năng:
+ * - Truy cập camera của thiết bị.
+ * - Hiển thị luồng video trực tiếp.
+ * - Chụp ảnh từ luồng video.
+ * - Chuyển đổi ảnh đã chụp thành định dạng Base64.
+ * - Quản lý giao diện camera động (hiển thị/ẩn).
+ * - Chuyển đổi camera trước/sau.
+ */
 
-    if (!document.getElementById('vuCameraModuleStyle')) {
-        const styleTag = document.createElement('style');
-        styleTag.id = 'vuCameraModuleStyle';
-        styleTag.textContent = `
-            html, body {
-                margin: 0;
-                padding: 0;
-                width: 100%;
-                height: 100%;
-                overflow: hidden;
-                font-family: Arial, sans-serif;
-                background-color: #f0f0f0;
-            }
+const CameraModule = (() => {
+    // --- Các biến và phần tử DOM nội bộ ---
+    let _videoElement = null;
+    let _canvasElement = null;
+    let _context = null;
+    let _stream = null; // Đối tượng MediaStream từ camera
+    let _facingMode = 'environment'; // 'user' (camera trước) hoặc 'environment' (camera sau)
+    let _resolveCapturePromise = null; // Hàm resolve của Promise khi chụp ảnh thành công
+    let _rejectCapturePromise = null; // Hàm reject của Promise khi có lỗi
 
-            .vu-camera-app-container {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100vw;
-                height: 100vh;
-                max-width: none;
-                margin: 0;
-                padding: 0;
-                z-index: 9999;
-                background-color: rgba(0, 0, 0, .2);
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                overflow: hidden;
-                -webkit-font-smoothing: antialiased;
-                -moz-osx-font-smoothing: grayscale;
-                opacity: 0;
-                visibility: hidden;
-                transition: opacity 0.3s ease, visibility 0.3s ease;
-            }
+    let _cameraAppContainer = null;
+    let _takePhotoButton = null;
+    let _backButton = null;
+    let _switchCameraButton = null; // Nút chuyển đổi camera (trước/sau)
 
-            .vu-camera-app-container.active {
-                opacity: 1;
-                visibility: visible;
-            }
+    // --- HTML và CSS mẫu được nhúng ---
+    // Đây là toàn bộ cấu trúc HTML cho giao diện camera
+    const _htmlTemplate = `
+        <div id="vuCameraAppContainer" class="vu-camera-app-container">
+            <div class="vu-camera-feed-container">
+                <video id="vuCameraFeed" class="vu-camera-feed" playsinline></video>
+            </div>
 
-            .vu-camera-app-container .vu-camera-feed-container {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                overflow: hidden;
-                z-index: 1;
-            }
+            <header class="vu-header">
+                <div class="vu-header-left" id="vuBackButton">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-chevron-left" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                            d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0" />
+                    </svg>
+                    Trở về
+                </div>
+                <div class="vu-header-right" id="vuSwitchCameraButton">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+                        <path
+                            d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9" />
+                        <path fill-rule="evenodd"
+                            d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z" />
+                    </svg>
+                </div>
+            </header>
 
-            .vu-camera-app-container .vu-camera-feed {
-                min-width: 100%;
-                min-height: 100%;
-                width: auto;
-                height: auto;
-                display: none;
-                transform: scaleX(1);
-                object-fit: cover;
-                filter: brightness(0.8);
-            }
+            <div class="vu-qr-overlay">
+                <div class="vu-qr-frame">
+                    <div class="vu-corner vu-top-left"></div>
+                    <div class="vu-corner vu-top-right"></div>
+                    <div class="vu-corner vu-bottom-left"></div>
+                    <div class="vu-corner vu-bottom-right"></div>
+                </div>
+            </div>
 
-            .vu-camera-app-container .vu-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 15px 20px;
-                position: relative;
-                z-index: 3;
-                background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
-                padding-top: calc(15px + env(safe-area-inset-top));
-                height: 3rem;
-            }
+            <div class="vu-bottom-content">
+                <nav class="vu-navbar">
+                    <div class="logoFooter"></div>
+                    <div class="logoFooter"></div>
+                </nav>
+                <button class="vu-take-photo-button" id="vuTakePhotoButton">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-camera-fill"
+                        viewBox="0 0 16 16">
+                        <path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
+                        <path
+                            d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1m9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0" />
+                    </svg>
+                    Chụp ảnh chấm công
+                </button>
+            </div>
 
-            .vu-camera-app-container .vu-header-left,
-            .vu-camera-app-container .vu-header-right {
-                padding: 0.5rem 1.5rem;
-                display: flex;
-                border-radius: 2rem;
-                justify-content: center;
-                align-items: center;
-                background-color: rgba(255, 255, 255, 0.3);
-                font-size: 1rem;
-                color: #fff;
-                cursor: pointer;
-                transition: background-color 0.2s ease;
-            }
-            .vu-camera-app-container .vu-header-left:hover,
-            .vu-camera-app-container .vu-header-right:hover {
-                background-color: rgba(255, 255, 255, 0.4);
-            }
-
-            .vu-camera-app-container .vu-header-left svg {
-                width: 1rem;
-                height: 1rem;
-                color: #fff;
-                margin-right: 5px;
-            }
-            .vu-camera-app-container .vu-header-right svg {
-                width: 1.2rem;
-                height: 1.2rem;
-                color: #fff;
-            }
-
-            .vu-camera-app-container .vu-qr-overlay {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                display: flex;
-                justify-content: center;
-                margin-top: 5rem;
-                z-index: 2;
-            }
-
-            .vu-camera-app-container .vu-qr-frame {
-                width: 80%;
-                max-width: 400px;
-                height: calc(100% - 17rem);
-                max-height: 400px;
-                position: relative;
-                box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
-                border-radius: 2rem;
-            }
-            @media (max-height: 600px) {
-                .vu-camera-app-container .vu-qr-frame {
-                    height: calc(100% - 12rem);
-                }
-            }
-
-
-            .vu-camera-app-container .vu-corner {
-                position: absolute;
-                width: 2rem;
-                height: 2rem;
-                border: 3px solid #fff;
-                box-sizing: border-box;
-            }
-            .vu-camera-app-container .vu-top-left {
-                top: 0; left: 0;
-                border-right: none; border-bottom: none;
-                border-top-left-radius: 2rem;
-            }
-            .vu-camera-app-container .vu-top-right {
-                top: 0; right: 0;
-                border-left: none; border-bottom: none;
-                border-top-right-radius: 2rem;
-            }
-            .vu-camera-app-container .vu-bottom-left {
-                bottom: 0; left: 0;
-                border-right: none; border-top: none;
-                border-bottom-left-radius: 2rem;
-            }
-            .vu-camera-app-container .vu-bottom-right {
-                bottom: 0; right: 0;
-                border-left: none; border-top: none;
-                border-bottom-right-radius: 2rem;
-            }
-
-            .vu-camera-app-container .vu-bottom-content {
-                text-align: center;
-                position: relative;
-                z-index: 2003;
-                background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
-                padding: 20px 0 30px 0;
-                margin-top: auto;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                width: 100%;
-                min-height: 6rem;
-                padding-bottom: calc(30px + env(safe-area-inset-bottom));
-            }
-
-            .vu-camera-app-container .vu-take-photo-button {
-                background-color: rgba(255, 255, 255, 0.15);
-                color: #fff;
-                border: 1px solid rgba(255, 255, 255, .4);
-                padding: 1rem 3rem;
-                border-radius: 3rem;
-                font-size: 1rem;
-                cursor: pointer;
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-                transition: background-color 0.3s ease;
-                margin: 0 10px 10px 10px;
-            }
-            .vu-camera-app-container .vu-take-photo-button:hover {
-                background-color: rgba(255, 255, 255, 0.25);
-            }
-            .vu-camera-app-container .vu-take-photo-button svg {
-                width: 1.2rem;
-                height: 1.2rem;
-            }
-            .vu-camera-app-container .vu-take-photo-button:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
-
-            .vu-camera-app-container .vu-navbar {
-                display: flex;
-                justify-content: center;
-                background-color: transparent;
-                margin-top: -3rem;
-                margin-bottom: 1rem;
-                padding: 0;
-                position: relative;
-                z-index: 2001;
-                width: 100%;
-            }
-
-            .vu-camera-app-container .logoFooter {
-                background-color: transparent;
-                border: none;
-                color: #fff;
-                border-radius: 30px;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                transition: background-color 0.3s ease;
-                transform: scale(0.7);
-            }
-
-            .vu-camera-app-container .logoFooter svg {
-                transform: scale(0.8);
-            }
-
-            .vu-captured-photo-display {
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                max-width: 90%;
-                max-height: 90%;
-                width: auto;
-                height: auto;
-                border: 2px solid #ddd;
-                display: none;
-                z-index: 2000;
-                object-fit: contain;
-                background-color: #000;
-            }
-        `;
-        head.appendChild(styleTag);
-    }
-
-    if (!document.querySelector('link[href*="font-awesome"]')) {
-        const faLink = document.createElement('link');
-        faLink.rel = 'stylesheet';
-        faLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css';
-        head.appendChild(faLink);
-    }
-}
-
-function createCameraAppContainer(id) {
-    const container = document.createElement('div');
-    container.id = id;
-    container.className = 'vu-camera-app-container';
-
-    const cameraFeedContainer = document.createElement('div');
-    cameraFeedContainer.className = 'vu-camera-feed-container';
-    const video = document.createElement('video');
-    video.id = 'vuCameraFeed';
-    video.className = 'vu-camera-feed';
-    video.playsInline = true;
-    cameraFeedContainer.appendChild(video);
-    container.appendChild(cameraFeedContainer);
-
-    const header = document.createElement('header');
-    header.className = 'vu-header';
-
-    const headerLeft = document.createElement('div');
-    headerLeft.className = 'vu-header-left';
-    headerLeft.id = 'vuBackButton';
-    headerLeft.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-            class="bi bi-chevron-left" viewBox="0 0 16 16">
-            <path fill-rule="evenodd"
-                d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0" />
-        </svg>
-        Trở về
+            <canvas id="vuPhotoCanvas" style="display: none;"></canvas>
+        </div>
+        <img id="vuCapturedPhotoDisplay" class="vu-captured-photo-display" alt="Ảnh đã chụp">
     `;
-    header.appendChild(headerLeft);
 
-    const headerRight = document.createElement('div');
-    headerRight.className = 'vu-header-right';
-    headerRight.id = 'vuSwitchCameraButton';
-    headerRight.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-            class="bi bi-arrow-repeat" viewBox="0 0 16 16">
-            <path
-                d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9" />
-            <path fill-rule="evenodd"
-                d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z" />
-        </svg>
+    // Đây là toàn bộ CSS cho giao diện camera
+    const _cssTemplate = `
+        .vu-captured-photo-display {
+            margin-top: 20px;
+            max-width: 90%;
+            height: auto;
+            border: 2px solid #ddd;
+            display: none;
+            z-index: 2000;
+        }
+
+        .vu-camera-app-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            max-width: none;
+            margin: 0;
+            padding: 0;
+            z-index: 9999;
+            background-color: rgba(0, 0, 0, .2);
+            display: none; /* Mặc định ẩn */
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .vu-camera-app-container.active {
+            display: flex; /* Hiển thị khi active */
+        }
+
+        .vu-camera-app-container .vu-camera-feed-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .vu-camera-app-container .vu-camera-feed {
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            display: none; /* Ẩn cho đến khi stream sẵn sàng */
+            transform: scaleX(-1); /* Lật ngang để giống gương */
+            object-fit: cover;
+            filter: brightness(0.8);
+        }
+
+        .vu-camera-app-container .vu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            position: relative;
+            z-index: 3;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
+            padding-top: calc(15px + env(safe-area-inset-top));
+            height: 3rem;
+        }
+
+        .vu-camera-app-container .vu-header-left {
+            padding: 0.5rem 1.5rem;
+            display: flex;
+            border-radius: 2rem;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.3);
+            font-size: 1rem;
+            color: #fff;
+            cursor: pointer; /* Thêm con trỏ cho nút */
+        }
+
+        .vu-camera-app-container .vu-header-right {
+            padding: 0.5rem;
+            display: flex;
+            border-radius: 2rem;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.3);
+            font-size: 1rem;
+            color: #fff;
+            cursor: pointer; /* Thêm con trỏ cho nút */
+        }
+
+        .vu-camera-app-container .vu-header-left svg {
+            width: 1rem;
+            color: #fff;
+            margin-right: 5px;
+        }
+
+        /* Flash icon - not directly implemented in JS but kept for styling */
+        .vu-camera-app-container .vu-header-right .fas.fa-bolt.active {
+            color: yellow;
+        }
+
+        .vu-camera-app-container .vu-qr-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 5rem;
+            z-index: 2;
+        }
+
+        .vu-camera-app-container .vu-qr-frame {
+            width: 80%;
+            height: calc(100% - 17rem);
+            position: relative;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
+            border-radius: 2rem;
+        }
+
+        .vu-camera-app-container .vu-corner {
+            position: absolute;
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid #fff;
+            box-sizing: border-box;
+        }
+
+        .vu-camera-app-container .vu-top-left {
+            top: 0;
+            left: 0;
+            border-right: none;
+            border-bottom: none;
+            border-top-left-radius: 2rem;
+        }
+
+        .vu-camera-app-container .vu-top-right {
+            top: 0;
+            right: 0;
+            border-left: none;
+            border-bottom: none;
+            border-top-right-radius: 2rem;
+        }
+
+        .vu-camera-app-container .vu-bottom-left {
+            bottom: 0;
+            left: 0;
+            border-right: none;
+            border-top: none;
+            border-bottom-left-radius: 2rem;
+        }
+
+        .vu-camera-app-container .vu-bottom-right {
+            bottom: 0;
+            right: 0;
+            border-left: none;
+            border-top: none;
+            border-bottom-right-radius: 2rem;
+        }
+
+        .vu-camera-app-container .vu-bottom-content {
+            text-align: center;
+            position: relative;
+            z-index: 2003;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
+            padding: 20px 0 30px 0;
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            height: 6rem;
+        }
+
+        /* Text elements - not directly used in this version but kept for future use */
+        .vu-camera-app-container .vu-scan-text {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .vu-camera-app-container .vu-supported-services {
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 30px;
+        }
+
+        .vu-camera-app-container .vu-supported-services .vu-highlight {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .vu-camera-app-container .vu-upload-button,
+        .vu-camera-app-container .vu-take-photo-button,
+        .vu-camera-app-container .vu-toggle-play-button {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 3rem;
+            font-size: 1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s ease;
+            margin: 0 10px 10px 10px;
+            border: 1px solid rgba(255, 255, 255, .4);
+        }
+
+        .vu-camera-app-container .vu-upload-button:hover,
+        .vu-camera-app-container .vu-take-photo-button:hover,
+        .vu-camera-app-container .vu-toggle-play-button:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .vu-camera-app-container .vu-upload-button i,
+        .vu-camera-app-container .vu-take-photo-button i,
+        .vu-camera-app-container .vu-toggle-play-button i {
+            font-size: 18px;
+        }
+
+        .vu-camera-app-container .vu-take-photo-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .vu-camera-app-container .vu-navbar {
+            display: flex;
+            justify-content: center;
+            background-color: transparent;
+            margin-top: -3rem;
+            margin-bottom: 1rem;
+            padding: 0;
+            position: relative;
+            z-index: 2001;
+            /* Width 10% was too small, adjusted for better button layout if needed */
+            /* width: 10%; */
+            padding-bottom: calc(15px + env(safe-area-inset-bottom));
+        }
+
+        .vu-camera-app-container .logoFooter {
+            background-color: transparent;
+            border: none;
+            color: #fff;
+            border-radius: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s ease;
+            transform: scale(0.7); /* Scale logo smaller */
+        }
+
+        .vu-camera-app-container .logoFooter svg {
+            transform: scale(0.8); /* Scale SVG inside logo smaller */
+        }
     `;
-    header.appendChild(headerRight);
-    container.appendChild(header);
 
-    const qrOverlay = document.createElement('div');
-    qrOverlay.className = 'vu-qr-overlay';
-    const qrFrame = document.createElement('div');
-    qrFrame.className = 'vu-qr-frame';
-    ['vu-top-left', 'vu-top-right', 'vu-bottom-left', 'vu-bottom-right'].forEach(cls => {
-        const corner = document.createElement('div');
-        corner.className = `vu-corner ${cls}`;
-        qrFrame.appendChild(corner);
-    });
-    qrOverlay.appendChild(qrFrame);
-    container.appendChild(qrOverlay);
-
-    const bottomContent = document.createElement('div');
-    bottomContent.className = 'vu-bottom-content';
-
-    const navbar = document.createElement('nav');
-    navbar.className = 'vu-navbar';
-
-    const logoFooter1 = document.createElement('div');
-    logoFooter1.className = 'logoFooter';
-    navbar.appendChild(logoFooter1);
-
-    const logoFooter2 = document.createElement('div');
-    logoFooter2.className = 'logoFooter';
-    navbar.appendChild(logoFooter2);
-    
-    bottomContent.appendChild(navbar);
-
-    const takePhotoButton = document.createElement('button');
-    takePhotoButton.className = 'vu-take-photo-button';
-    takePhotoButton.id = 'vuTakePhotoButton';
-    takePhotoButton.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-            class="bi bi-camera-fill" viewBox="0 0 16 16">
-            <path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
-            <path
-                d="M2 4a2 0 0 0 -2 2v6a2 0 0 0 2 2h12a2 0 0 0 2-2V6a2 0 0 0 -2-2h-1.172a2 2 0 0 1 -1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0 -1.414.586l-.828.828A2 2 0 0 1 3.172 4zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1m9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0" />
-        </svg>
-        Chụp ảnh chấm công
-    `;
-    bottomContent.appendChild(takePhotoButton);
-    container.appendChild(bottomContent);
-
-    const photoCanvas = document.createElement('canvas');
-    photoCanvas.id = 'vuPhotoCanvas';
-    photoCanvas.style.display = 'none';
-    container.appendChild(photoCanvas);
-
-    return container;
-}
-
-export class CameraApp {
-    constructor(options = {}) {
-        if (!document.documentElement) document.appendChild(document.createElement('html'));
-        if (!document.head) document.documentElement.appendChild(document.createElement('head'));
-        if (!document.body) document.documentElement.appendChild(document.createElement('body'));
-
-        addModuleCss();
-
-        this.options = {
-            containerId: 'vuCameraAppContainer',
-            facingMode: 'environment',
-            onOpen: () => {},
-            onClose: () => {},
-            onPhotoTaken: () => {},
-            autoStart: true,
-            ...options
-        };
-
-        this.cameraAppContainer = null;
-        this.cameraFeed = null;
-        this.switchCameraButton = null;
-        this.backButton = null;
-        this.takePhotoButton = null;
-        this.photoCanvas = null;
-        this.photoContext = null;
-        this.capturedPhotoDisplay = null;
-
-        this.stream = null;
-        this.track = null;
-        this.currentFacingMode = this.options.facingMode;
-
-        this._isInitialized = false;
-    }
-
-    init() {
-        if (this._isInitialized) {
-            console.warn("CameraApp đã được khởi tạo bởi Vu. Không cần gọi init() lần nữa.");
+    /**
+     * Chèn CSS vào tài liệu.
+     */
+    const _injectCSS = () => {
+        if (document.getElementById('vu-camera-module-style')) {
+            // CSS đã được chèn, không làm gì cả
             return;
         }
+        const style = document.createElement('style');
+        style.id = 'vu-camera-module-style';
+        style.textContent = _cssTemplate;
+        document.head.appendChild(style);
+    };
 
-        this.cameraAppContainer = createCameraAppContainer(this.options.containerId);
-        document.body.appendChild(this.cameraAppContainer);
-
-        this.capturedPhotoDisplay = document.createElement('img');
-        this.capturedPhotoDisplay.id = 'vuCapturedPhotoDisplay';
-        this.capturedPhotoDisplay.className = 'vu-captured-photo-display';
-        this.capturedPhotoDisplay.alt = 'Ảnh đã chụp';
-        this.capturedPhotoDisplay.style.display = 'none';
-        document.body.appendChild(this.capturedPhotoDisplay);
-
-
-        this.cameraFeed = this.cameraAppContainer.querySelector('#vuCameraFeed');
-        this.switchCameraButton = this.cameraAppContainer.querySelector('#vuSwitchCameraButton');
-        this.backButton = this.cameraAppContainer.querySelector('#vuBackButton');
-        this.takePhotoButton = this.cameraAppContainer.querySelector('#vuTakePhotoButton');
-        this.photoCanvas = this.cameraAppContainer.querySelector('#vuPhotoCanvas');
-        this.photoContext = this.photoCanvas.getContext('2d');
-        
-        this._addEventListeners();
-
-        this._isInitialized = true;
-        console.log("CameraApp đã được khởi tạo bởi Vu.");
-    }
-
-    _addEventListeners() {
-        if (this.backButton) {
-            this.backButton.addEventListener('click', () => {
-                this.close();
-            });
+    /**
+     * Dừng luồng camera hiện tại.
+     */
+    const _stopCameraStream = () => {
+        if (_stream) {
+            _stream.getTracks().forEach(track => track.stop());
+            _stream = null;
+            if (_videoElement) {
+                _videoElement.srcObject = null;
+                _videoElement.style.display = 'none'; // Ẩn video khi dừng stream
+            }
         }
-        if (this.switchCameraButton) {
-            this.switchCameraButton.addEventListener('click', () => this._switchCamera());
-        }
-        if (this.takePhotoButton) {
-            this.takePhotoButton.addEventListener('click', () => this.takePhoto());
-            this.takePhotoButton.disabled = true;
-        }
-    }
+    };
 
-    async open() {
-        if (!this._isInitialized) {
-            console.error("CameraApp chưa được khởi tạo bởi Vu. Vui lòng gọi init() trước.");
-            return;
-        }
-        
-        this.cameraAppContainer.classList.add('active');
-        if (this.capturedPhotoDisplay) this.capturedPhotoDisplay.style.display = 'none';
+    /**
+     * Bắt đầu luồng camera với facingMode đã chọn.
+     * @returns {Promise<void>}
+     */
+    const _startCameraStream = async () => {
+        _stopCameraStream(); // Dừng luồng cũ nếu có
 
-        this.options.onOpen();
-
-        if (this.options.autoStart) {
-            await this.startStream();
-        }
-    }
-
-    async startStream() {
-        if (this.stream) {
-            this.stream.getTracks().forEach(track => track.stop());
-            this.cameraFeed.srcObject = null;
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            console.error('Trình duyệt không hỗ trợ getUserMedia API.');
+            _displayMessage('Lỗi: Trình duyệt của bạn không hỗ trợ truy cập camera.', true);
+            return Promise.reject(new Error('getUserMedia not supported.'));
         }
 
         try {
-            this.stream = await navigator.mediaDevices.getUserMedia({
+            // Thử khởi động camera với facingMode hiện tại
+            _stream = await navigator.mediaDevices.getUserMedia({
                 video: {
-                    facingMode: this.currentFacingMode,
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 }
+                    facingMode: _facingMode,
+                    width: { ideal: 1920 }, // Cố gắng lấy độ phân giải cao hơn
+                    height: { ideal: 1080 }
                 }
             });
 
-            this.cameraFeed.srcObject = this.stream;
-            this.cameraFeed.style.display = 'block';
-            await this.cameraFeed.play();
-            
-            this.track = this.stream.getVideoTracks()[0];
+            _videoElement.srcObject = _stream;
+            _videoElement.play();
+            _videoElement.style.display = 'block'; // Hiển thị video khi stream sẵn sàng
 
-            if (this.currentFacingMode === 'user') {
-                this.cameraFeed.style.transform = 'scaleX(-1)';
-            } else {
-                this.cameraFeed.style.transform = 'scaleX(1)';
-            }
-
-            this.takePhotoButton.disabled = false;
-
-            console.log(`Camera đã được mở thành công bởi Vu. Chế độ: ${this.currentFacingMode}.`);
-
+            // Đảm bảo video đã tải đủ siêu dữ liệu để có thể lấy kích thước chính xác
+            await new Promise(resolve => {
+                _videoElement.onloadedmetadata = () => {
+                    // Đặt kích thước canvas bằng kích thước thực của video
+                    _canvasElement.width = _videoElement.videoWidth;
+                    _canvasElement.height = _videoElement.videoHeight;
+                    _takePhotoButton.disabled = false; // Bật nút chụp ảnh
+                    resolve();
+                };
+            });
         } catch (err) {
-            console.error("Lỗi khi truy cập camera bởi Vu: ", err);
-            alert("Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập hoặc thiết bị của bạn không có camera/webcam.");
-            
-            this.cameraFeed.style.display = 'none';
-            this.takePhotoButton.disabled = true;
-            this.cameraAppContainer.classList.remove('active');
-            this.options.onClose();
-        }
-    }
+            console.error('Lỗi khi truy cập camera:', err);
+            _takePhotoButton.disabled = true; // Tắt nút chụp ảnh khi có lỗi
 
-    close() {
-        if (this.stream) {
-            this.stream.getTracks().forEach(track => track.stop());
-            this.cameraFeed.srcObject = null;
-            this.stream = null;
-            this.track = null;
-            this.cameraFeed.style.display = 'none';
-            this.takePhotoButton.disabled = true;
-            console.log("Camera đã được dừng bởi Vu.");
+            let errorMessage = 'Lỗi không xác định khi truy cập camera.';
+            if (err.name === 'NotAllowedError') {
+                errorMessage = 'Bạn đã từ chối quyền truy cập camera. Vui lòng cấp quyền trong cài đặt trình duyệt.';
+            } else if (err.name === 'NotFoundError') {
+                errorMessage = 'Không tìm thấy camera trên thiết bị.';
+            } else if (err.name === 'NotReadableError') {
+                errorMessage = 'Camera đang được sử dụng bởi ứng dụng khác.';
+            } else if (err.name === 'OverconstrainedError') {
+                errorMessage = 'Không thể đáp ứng các ràng buộc camera (ví dụ: độ phân giải yêu cầu quá cao).';
+            } else if (err.name === 'AbortError') {
+                errorMessage = 'Truy cập camera bị gián đoạn.';
+            }
+            _displayMessage(`Lỗi camera: ${errorMessage}`, true);
+            _stopCameraStream(); // Đảm bảo dừng stream nếu có lỗi
+            return Promise.reject(err);
         }
-        this.cameraAppContainer.classList.remove('active');
-        if (this.capturedPhotoDisplay) this.capturedPhotoDisplay.style.display = 'none';
-        this.options.onClose();
-    }
+    };
 
-    takePhoto() {
-        if (!this.stream || this.cameraFeed.paused) {
-            alert("Vui lòng đảm bảo camera đang hoạt động trước khi chụp ảnh bởi Vu.");
+    /**
+     * Hiển thị thông báo trong giao diện người dùng (thay thế alert).
+     * @param {string} message - Nội dung thông báo.
+     * @param {boolean} isError - True nếu là thông báo lỗi, false nếu là thông báo thông thường.
+     */
+    const _displayMessage = (message, isError = false) => {
+        // Tạo một div để hiển thị thông báo
+        const messageBox = document.createElement('div');
+        messageBox.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: ${isError ? 'rgba(255, 0, 0, 0.8)' : 'rgba(0, 0, 0, 0.7)'};
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            z-index: 10000;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: opacity 0.3s ease-in-out;
+            opacity: 0;
+            max-width: 80%;
+        `;
+        messageBox.textContent = message;
+        document.body.appendChild(messageBox);
+
+        // Hiển thị và tự động ẩn sau 3 giây
+        setTimeout(() => {
+            messageBox.style.opacity = '1';
+        }, 10); // Cho phép render trước khi áp dụng opacity
+
+        setTimeout(() => {
+            messageBox.style.opacity = '0';
+            messageBox.addEventListener('transitionend', () => messageBox.remove());
+        }, 3000);
+    };
+
+    /**
+     * Chụp ảnh từ luồng video và chuyển đổi sang Base64.
+     * @returns {string|null} - Ảnh Base64 hoặc null nếu không thể chụp.
+     */
+    const _capturePhoto = () => {
+        if (!_videoElement || !_canvasElement || !_context || !_stream) {
+            console.error('Camera chưa được khởi tạo hoặc stream không hoạt động.');
+            _displayMessage('Không thể chụp ảnh: Camera không sẵn sàng.', true);
             return null;
         }
 
-        this.photoCanvas.width = this.cameraFeed.videoWidth;
-        this.photoCanvas.height = this.cameraFeed.videoHeight;
-        
-        this.photoContext.save();
+        // Đảm bảo canvas có kích thước phù hợp với video
+        _canvasElement.width = _videoElement.videoWidth;
+        _canvasElement.height = _videoElement.videoHeight;
 
-        if (this.currentFacingMode === 'user') {
-            this.photoContext.translate(this.photoCanvas.width, 0);
-            this.photoContext.scale(-1, 1);
-        }
-        
-        this.photoContext.drawImage(this.cameraFeed, 0, 0, this.photoCanvas.width, this.photoCanvas.height);
-        
-        this.photoContext.restore();
+        // Vẽ frame hiện tại của video lên canvas
+        // Cần lật lại ảnh theo trục X nếu video đang bị lật (-1, 1)
+        _context.translate(_canvasElement.width, 0);
+        _context.scale(-1, 1);
+        _context.drawImage(_videoElement, 0, 0, _canvasElement.width, _canvasElement.height);
+        _context.setTransform(1, 0, 0, 1, 0, 0); // Đặt lại transform cho các lần vẽ sau
 
-        const imageDataURL = this.photoCanvas.toDataURL('image/png');
-        console.log("Ảnh đã được chụp và chuyển thành Base64 bởi Vu.");
-
-        if (this.capturedPhotoDisplay) {
-            this.capturedPhotoDisplay.src = imageDataURL;
-            this.capturedPhotoDisplay.style.display = 'block';
-        }
-
-        this.options.onPhotoTaken(imageDataURL);
+        // Chuyển canvas thành ảnh Base64
+        const imageDataURL = _canvasElement.toDataURL('image/jpeg', 0.9); // Định dạng JPEG, chất lượng 90%
         return imageDataURL;
-    }
+    };
 
-    async _switchCamera() {
-        this.currentFacingMode = (this.currentFacingMode === 'user') ? 'environment' : 'user';
-        console.log(`Chuyển camera sang chế độ: ${this.currentFacingMode} bởi Vu.`);
-        
-        await this.startStream();
-    }
+    /**
+     * Chuyển đổi giữa camera trước và camera sau.
+     */
+    const _switchCamera = async () => {
+        _facingMode = (_facingMode === 'environment') ? 'user' : 'environment';
+        try {
+            await _startCameraStream();
+            _displayMessage(`Đã chuyển sang camera ${_facingMode === 'environment' ? 'sau' : 'trước'}.`);
+        } catch (error) {
+            console.error('Không thể chuyển đổi camera:', error);
+            _displayMessage('Không thể chuyển đổi camera. Thiết bị có thể không có camera thứ hai.', true);
+            // Đặt lại facingMode nếu không thể chuyển đổi
+            _facingMode = (_facingMode === 'environment') ? 'user' : 'environment';
+        }
+    };
 
-    destroy() {
-        this.close();
+    // --- Phương thức công khai (Public API) của module ---
+    return {
+        /**
+         * Khởi tạo module camera bằng cách chèn HTML và CSS vào DOM.
+         * Nên gọi hàm này một lần khi ứng dụng khởi động.
+         */
+        init: () => {
+            _injectCSS(); // Chèn CSS vào head
 
-        if (this.backButton) {
-            this.backButton.removeEventListener('click', () => this.close());
-        }
-        if (this.switchCameraButton) {
-            this.switchCameraButton.removeEventListener('click', () => this._switchCamera());
-        }
-        if (this.takePhotoButton) {
-            this.takePhotoButton.removeEventListener('click', () => this.takePhoto());
-        }
+            // Tạo các phần tử HTML từ template và thêm vào body
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = _htmlTemplate;
+            // Lấy các phần tử trực tiếp từ tempDiv để tránh lỗi "getElementById" trước khi append
+            _cameraAppContainer = tempDiv.querySelector('#vuCameraAppContainer');
+            _videoElement = tempDiv.querySelector('#vuCameraFeed');
+            _canvasElement = tempDiv.querySelector('#vuPhotoCanvas');
+            _takePhotoButton = tempDiv.querySelector('#vuTakePhotoButton');
+            _backButton = tempDiv.querySelector('#vuBackButton');
+            _switchCameraButton = tempDiv.querySelector('#vuSwitchCameraButton');
 
-        if (this.cameraAppContainer && this.cameraAppContainer.parentNode) {
-            this.cameraAppContainer.parentNode.removeChild(this.cameraAppContainer);
-        }
-        if (this.capturedPhotoDisplay && this.capturedPhotoDisplay.parentNode) {
-            this.capturedPhotoDisplay.parentNode.removeChild(this.capturedPhotoDisplay);
-        }
+            document.body.appendChild(_cameraAppContainer);
+            document.body.appendChild(tempDiv.querySelector('#vuCapturedPhotoDisplay')); // Thêm ảnh hiển thị
 
-        this._isInitialized = false;
-        console.log("CameraApp đã được hủy bởi Vu.");
-    }
-}
+            _context = _canvasElement.getContext('2d');
+
+            // Gắn các sự kiện click
+            if (_takePhotoButton) {
+                _takePhotoButton.addEventListener('click', () => {
+                    const photoBase64 = _capturePhoto();
+                    if (photoBase64 && _resolveCapturePromise) {
+                        _resolveCapturePromise(photoBase64); // Giải quyết Promise với ảnh Base64
+                    } else if (_rejectCapturePromise) {
+                        _rejectCapturePromise(new Error('Failed to capture photo or no promise to resolve.'));
+                    }
+                    _stopCameraStream(); // Dừng stream sau khi chụp
+                    _cameraAppContainer.classList.remove('active'); // Ẩn giao diện camera
+                });
+                _takePhotoButton.disabled = true; // Mặc định tắt cho đến khi camera sẵn sàng
+            }
+
+            if (_backButton) {
+                _backButton.addEventListener('click', () => {
+                    _stopCameraStream(); // Dừng stream khi thoát
+                    _cameraAppContainer.classList.remove('active'); // Ẩn giao diện camera
+                    if (_rejectCapturePromise) {
+                        // Reject promise nếu người dùng thoát mà không chụp ảnh
+                        _rejectCapturePromise(new Error('Camera operation cancelled by user.'));
+                    }
+                });
+            }
+
+            if (_switchCameraButton) {
+                _switchCameraButton.addEventListener('click', _switchCamera);
+            }
+        },
+
+        /**
+         * Mở giao diện camera và bắt đầu luồng video.
+         * Trả về một Promise sẽ được giải quyết với ảnh Base64 khi ảnh được chụp,
+         * hoặc bị từ chối nếu có lỗi hoặc người dùng hủy.
+         * @returns {Promise<string>} - Promise chứa chuỗi Base64 của ảnh.
+         */
+        open: () => {
+            return new Promise(async (resolve, reject) => {
+                _resolveCapturePromise = resolve;
+                _rejectCapturePromise = reject;
+
+                if (!_cameraAppContainer) {
+                    console.warn('CameraModule chưa được khởi tạo. Đang tự động khởi tạo.');
+                    CameraModule.init(); // Tự động khởi tạo nếu chưa gọi init
+                }
+
+                _cameraAppContainer.classList.add('active'); // Hiển thị giao diện camera
+                _takePhotoButton.disabled = true; // Vô hiệu hóa nút chụp khi bắt đầu
+
+                try {
+                    await _startCameraStream();
+                } catch (error) {
+                    _cameraAppContainer.classList.remove('active'); // Ẩn giao diện nếu lỗi
+                    reject(error); // Từ chối Promise nếu không thể khởi động camera
+                }
+            });
+        },
+
+        /**
+         * Đóng giao diện camera và dừng luồng video.
+         */
+        close: () => {
+            _stopCameraStream();
+            if (_cameraAppContainer) {
+                _cameraAppContainer.classList.remove('active');
+            }
+        },
+
+        /**
+         * Hiển thị một ảnh Base64 đã chụp.
+         * @param {string} base64Image - Chuỗi Base64 của ảnh.
+         */
+        displayCapturedPhoto: (base64Image) => {
+            const displayElement = document.getElementById('vuCapturedPhotoDisplay');
+            if (displayElement) {
+                displayElement.src = base64Image;
+                displayElement.style.display = 'block';
+            } else {
+                console.error('Không tìm thấy phần tử để hiển thị ảnh đã chụp.');
+            }
+        },
+
+        /**
+         * Ẩn ảnh đã chụp.
+         */
+        hideCapturedPhoto: () => {
+            const displayElement = document.getElementById('vuCapturedPhotoDisplay');
+            if (displayElement) {
+                displayElement.style.display = 'none';
+                displayElement.src = ''; // Xóa nguồn ảnh
+            }
+        }
+    };
+})();
