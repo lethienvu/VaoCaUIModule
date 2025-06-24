@@ -133,18 +133,21 @@ const CameraModule = (() => {
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            z-index: 1;//123
+            z-index: 1;
         }
 
         .vu-camera-app-container .vu-camera-feed {
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
+            width: 100%; /* Đặt chiều rộng 100% của container */
+            height: 100%; /* Đặt chiều cao 100% của container */
             display: block; /* HIỂN THỊ VIDEO FEED */
             transform: scaleX(-1); /* Lật ngang để giống gương (vẫn cần cho canvas) */
-            object-fit: cover;
+            object-fit: contain; /* THAY ĐỔI TẠI ĐÂY: Chứa video trong khung mà không cắt xén, có thể có khoảng đen */
             filter: brightness(0.8);
+            /* BỎ CÁC THUỘC TÍNH MIN-WIDTH/MIN-HEIGHT */
+            /* min-width: 100%; */
+            /* min-height: 100%; */
+            /* width: auto; */
+            /* height: auto; */
         }
 
         .vu-camera-app-container .vu-header {
@@ -509,7 +512,7 @@ const CameraModule = (() => {
         // Chuyển canvas thành ảnh Base64 với chất lượng thấp nhất có thể (0.5)
         const imageDataURL = _canvasElement.toDataURL('image/jpeg', 0.5); // Định dạng JPEG, chất lượng 50%
         return imageDataURL;
-    };//123
+    };
 
     /**
      * Chuyển đổi giữa camera trước và camera sau.
@@ -635,10 +638,6 @@ const CameraModule = (() => {
                 console.error('Không tìm thấy phần tử để hiển thị ảnh đã chụp.');
             }
         },
-
-        /**
-         * Ẩn ảnh đã chụp.
-         */
         hideCapturedPhoto: () => {
             const displayElement = document.getElementById('vuCapturedPhotoDisplay');
             if (displayElement) {
