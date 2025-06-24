@@ -18,7 +18,7 @@ const CameraModule = (() => {
     let _canvasElement = null;
     let _context = null;
     let _stream = null; // Đối tượng MediaStream từ camera
-    let _facingMode = 'environment'; // 'user' (camera trước) hoặc 'environment' (camera sau)
+    let _facingMode = 'user'; // Đã thay đổi thành 'user' để ưu tiên camera trước
     let _resolveCapturePromise = null; // Hàm resolve của Promise khi chụp ảnh thành công
     let _rejectCapturePromise = null; // Hàm reject của Promise khi có lỗi
 
