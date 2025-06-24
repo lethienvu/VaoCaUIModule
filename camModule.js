@@ -509,7 +509,7 @@ const CameraModule = (() => {
         // Chuyển canvas thành ảnh Base64 với chất lượng thấp nhất có thể (0.5)
         const imageDataURL = _canvasElement.toDataURL('image/jpeg', 0.5); // Định dạng JPEG, chất lượng 50%
         return imageDataURL;
-    };
+    };//123
 
     /**
      * Chuyển đổi giữa camera trước và camera sau.
