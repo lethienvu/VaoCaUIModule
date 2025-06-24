@@ -141,13 +141,8 @@ const CameraModule = (() => {
             height: 100%; /* Đặt chiều cao 100% của container */
             display: block; /* HIỂN THỊ VIDEO FEED */
             transform: scaleX(-1); /* Lật ngang để giống gương (vẫn cần cho canvas) */
-            object-fit: contain; /* THAY ĐỔI TẠI ĐÂY: Chứa video trong khung mà không cắt xén, có thể có khoảng đen */
+            object-fit: contain; /* Chứa video trong khung mà không cắt xén, có thể có khoảng đen */
             filter: brightness(0.8);
-            /* BỎ CÁC THUỘC TÍNH MIN-WIDTH/MIN-HEIGHT */
-            /* min-width: 100%; */
-            /* min-height: 100%; */
-            /* width: auto; */
-            /* height: auto; */
         }
 
         .vu-camera-app-container .vu-header {
@@ -398,12 +393,12 @@ const CameraModule = (() => {
         }
 
         try {
-            // Thử khởi động camera với facingMode hiện tại và độ phân giải thấp
+            // Yêu cầu luồng video mà không chỉ định độ phân giải cụ thể.
+            // Điều này cho phép trình duyệt chọn độ phân giải mặc định/tối ưu nhất
+            // cho hiệu suất và khả năng tương thích trên thiết bị.
             _stream = await navigator.mediaDevices.getUserMedia({
                 video: {
                     facingMode: _facingMode,
-                    width: { ideal: 640 },
-                    height: { ideal: 480 }
                 }
             });
 
@@ -433,7 +428,9 @@ const CameraModule = (() => {
             } else if (err.name === 'NotReadableError') {
                 errorMessage = 'Camera đang được sử dụng bởi ứng dụng khác.';
             } else if (err.name === 'OverconstrainedError') {
-                errorMessage = 'Không thể đáp ứng các ràng buộc camera (ví dụ: độ phân giải yêu cầu quá cao).';
+                // Lỗi này xảy ra khi trình duyệt không thể đáp ứng ràng buộc (constraint) cụ thể.
+                // Vì chúng ta đã bỏ width/height, lỗi này ít khả năng xảy ra hơn cho ràng buộc đó.
+                errorMessage = 'Không thể đáp ứng các ràng buộc camera.';
             } else if (err.name === 'AbortError') {
                 errorMessage = 'Truy cập camera bị gián đoạn.';
             }
@@ -638,6 +635,10 @@ const CameraModule = (() => {
                 console.error('Không tìm thấy phần tử để hiển thị ảnh đã chụp.');
             }
         },
+
+        /**
+         * Ẩn ảnh đã chụp.
+         */
         hideCapturedPhoto: () => {
             const displayElement = document.getElementById('vuCapturedPhotoDisplay');
             if (displayElement) {
@@ -648,5 +649,5 @@ const CameraModule = (() => {
     };
 })();
 
-// Export CameraModule như là một default export
+// Export CameraModule như là một default expo
 export default CameraModule;
