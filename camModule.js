@@ -45,7 +45,7 @@ const CameraModule = (() => {
                     Trở về
                 </div>
                 <div class="vu-header-right" id="vuSwitchCameraButton">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                         class="bi bi-arrow-repeat" viewBox="0 0 16 16">
                         <path
                             d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9" />
@@ -226,6 +226,7 @@ const CameraModule = (() => {
             background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
             padding-top: calc(15px + env(safe-area-inset-top));
             height: 3rem;
+            margin-top: 1rem;
         }
 
         .vu-camera-app-container .vu-header-left {
@@ -241,7 +242,7 @@ const CameraModule = (() => {
         }
 
         .vu-camera-app-container .vu-header-right {
-            padding: 0.5rem;
+            padding: 0.8rem;
             display: flex;
             border-radius: 2rem;
             justify-content: center;
@@ -277,10 +278,10 @@ const CameraModule = (() => {
 
         .vu-camera-app-container .vu-qr-frame {
             width: 80%;
-            height: calc(100% - 17rem);
+            height: calc(100% - 18rem);
             position: relative;
             box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
-            border-radius: 2rem;
+            border-radius: 25% 25% 40% 40%;
         }
 
         .vu-camera-app-container .vu-corner {
