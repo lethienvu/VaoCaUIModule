@@ -277,18 +277,18 @@ const CameraModule = (() => {
         }
 
         .vu-camera-app-container .vu-qr-frame {
-            width: 80%;
-            height: calc(100% - 17rem);
+            width: 90%;
+            height: calc(100% - 19rem);
             position: relative;
             box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
-            border-radius: 2rem;
+            border-radius: 3rem;
         }
 
         .vu-camera-app-container .vu-corner {
             position: absolute;
-            width: 2rem;
-            height: 2rem;
-            border: 3px solid #fff;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid #fff;
             box-sizing: border-box;
         }
 
@@ -335,7 +335,8 @@ const CameraModule = (() => {
             flex-direction: column;
             align-items: center;
             width: 100%;
-            height: 6rem;
+            height: 11rem;
+            margin-top: 1rem;
         }
 
         /* Text elements - not directly used in this version but kept for future use */
@@ -397,7 +398,7 @@ const CameraModule = (() => {
             justify-content: center;
             background-color: transparent;
             margin-top: -3rem;
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
             padding: 0;
             position: relative;
             z-index: 2001;
@@ -415,11 +416,10 @@ const CameraModule = (() => {
             display: flex;
             align-items: center;
             transition: background-color 0.3s ease;
-            transform: scale(0.7); /* Scale logo smaller */
         }
 
         .vu-camera-app-container .logoFooter svg {
-            transform: scale(0.8); /* Scale SVG inside logo smaller */
+            transform: scale(0.7); /* Scale SVG inside logo smaller */
         }
     `;
 
