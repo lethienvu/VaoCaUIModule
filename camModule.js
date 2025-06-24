@@ -1,305 +1,295 @@
-// app.js
-
-// Hàm để thêm CSS vào head của tài liệu
 function addModuleCss() {
-    // Nếu chưa có thẻ head, tạo nó
     let head = document.head || document.getElementsByTagName('head')[0];
     if (!head) {
         head = document.createElement('head');
-        document.documentElement.prepend(head); // Thêm head vào đầu tài liệu
+        document.documentElement.prepend(head);
     }
 
-    if (document.getElementById('cameraModuleStyle')) {
-        return; // Đã thêm rồi
+    if (!document.getElementById('cameraModuleStyle')) {
+        const styleTag = document.createElement('style');
+        styleTag.id = 'cameraModuleStyle';
+        styleTag.textContent = `
+            html, body {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                font-family: Arial, sans-serif;
+                background-color: #f0f0f0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            #openCameraButton {
+                padding: 15px 30px;
+                font-size: 18px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                margin-top: 50px;
+                z-index: 100;
+            }
+
+            #openCameraButton:hover {
+                background-color: #0056b3;
+            }
+
+            #capturedPhotoDisplay {
+                margin-top: 20px;
+                max-width: 90%;
+                height: auto;
+                border: 2px solid #ddd;
+                display: none;
+                z-index: 10;
+            }
+
+            #cameraAppContainer {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                max-width: none;
+                margin: 0;
+                padding: 0;
+                z-index: 9999;
+                background-color: #000;
+                display: none;
+                flex-direction: column;
+                justify-content: space-between;
+                overflow: hidden;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+
+            #cameraAppContainer.active {
+                display: flex;
+            }
+
+            #cameraAppContainer .camera-feed-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                overflow: hidden;
+                z-index: 1;
+            }
+
+            #cameraAppContainer #cameraFeed {
+                min-width: 100%;
+                min-height: 100%;
+                width: auto;
+                height: auto;
+                display: none;
+                transform: scaleX(-1);
+                object-fit: cover;
+                filter: brightness(0.8);
+            }
+
+            #cameraAppContainer .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 20px;
+                position: relative;
+                z-index: 3;
+                background: linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0));
+                padding-top: calc(15px + env(safe-area-inset-top));
+            }
+
+            #cameraAppContainer .header-left i,
+            #cameraAppContainer .header-right i {
+                font-size: 20px;
+                color: #fff;
+                cursor: pointer;
+                padding: 5px;
+            }
+
+            #cameraAppContainer .header-right .fas.fa-bolt.active {
+                color: yellow;
+            }
+
+            #cameraAppContainer .header-center {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 16px;
+                font-weight: bold;
+                color: #fff;
+                cursor: pointer;
+            }
+
+            #cameraAppContainer .header-center .flag-icon {
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                object-fit: cover;
+            }
+
+            #cameraAppContainer .qr-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 2;
+            }
+
+            #cameraAppContainer .qr-frame {
+                width: 250px;
+                height: 250px;
+                position: relative;
+                box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
+            }
+
+            #cameraAppContainer .corner {
+                position: absolute;
+                width: 40px;
+                height: 40px;
+                border: 3px solid #fff;
+                box-sizing: border-box;
+            }
+
+            #cameraAppContainer .top-left {
+                top: 0;
+                left: 0;
+                border-right: none;
+                border-bottom: none;
+                border-top-left-radius: 10px;
+            }
+
+            #cameraAppContainer .top-right {
+                top: 0;
+                right: 0;
+                border-left: none;
+                border-bottom: none;
+                border-top-right-radius: 10px;
+            }
+
+            #cameraAppContainer .bottom-left {
+                bottom: 0;
+                left: 0;
+                border-right: none;
+                border-top: none;
+                border-bottom-left-radius: 10px;
+            }
+
+            #cameraAppContainer .bottom-right {
+                bottom: 0;
+                right: 0;
+                border-left: none;
+                border-top: none;
+                border-bottom-right-radius: 10px;
+            }
+
+            #cameraAppContainer .bottom-content {
+                text-align: center;
+                position: relative;
+                z-index: 3;
+                background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0));
+                padding: 20px 0 40px 0;
+                margin-top: auto;
+            }
+
+            #cameraAppContainer .scan-text {
+                font-size: 20px;
+                font-weight: bold;
+                margin-bottom: 5px;
+                color: #fff;
+            }
+
+            #cameraAppContainer .supported-services {
+                font-size: 14px;
+                color: #ccc;
+                margin-bottom: 30px;
+            }
+
+            #cameraAppContainer .supported-services .highlight {
+                color: #4CAF50;
+                font-weight: bold;
+            }
+
+            #cameraAppContainer .upload-button,
+            #cameraAppContainer .take-photo-button {
+                background-color: rgba(255, 255, 255, 0.15);
+                color: #fff;
+                border: none;
+                padding: 12px 25px;
+                border-radius: 25px;
+                font-size: 16px;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                transition: background-color 0.3s ease;
+                margin: 0 10px 10px 10px;
+            }
+
+            #cameraAppContainer .upload-button:hover,
+            #cameraAppContainer .take-photo-button:hover {
+                background-color: rgba(255, 255, 255, 0.25);
+            }
+
+            #cameraAppContainer .upload-button i,
+            #cameraAppContainer .take-photo-button i {
+                font-size: 18px;
+            }
+
+            #cameraAppContainer .navbar {
+                display: flex;
+                justify-content: center;
+                background-color: rgba(0, 0, 0, 0.7);
+                padding: 15px 0;
+                position: relative;
+                z-index: 3;
+                border-top-left-radius: 15px;
+                border-top-right-radius: 15px;
+                padding-bottom: calc(15px + env(safe-area-inset-bottom));
+            }
+
+            #cameraAppContainer .nav-button {
+                background-color: transparent;
+                border: none;
+                color: #fff;
+                padding: 10px 20px;
+                margin: 0 5px;
+                border-radius: 20px;
+                font-size: 15px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                transition: background-color 0.3s ease;
+            }
+
+            #cameraAppContainer .nav-button i {
+                font-size: 18px;
+            }
+
+            #cameraAppContainer .nav-button.active {
+                background-color: rgba(255, 255, 255, 0.2);
+                font-weight: bold;
+            }
+
+            #cameraAppContainer .nav-button:not(.active):hover {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+        `;
+        head.appendChild(styleTag);
     }
-    const styleTag = document.createElement('style');
-    styleTag.id = 'cameraModuleStyle';
-    styleTag.textContent = `
-        /* CSS cho body và các phần tử gốc */
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden; /* Ngăn cuộn của trang chính */
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0; /* Nền của trang chính */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center; /* Canh giữa nút mở camera */
-        }
 
-        /* Nút để mở camera */
-        #openCameraButton {
-            padding: 15px 30px;
-            font-size: 18px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 50px;
-            z-index: 100;
-        }
-
-        #openCameraButton:hover {
-            background-color: #0056b3;
-        }
-
-        /* CSS cho ảnh đã chụp (hiển thị trên trang chính) */
-        #capturedPhotoDisplay {
-            margin-top: 20px;
-            max-width: 90%;
-            height: auto;
-            border: 2px solid #ddd;
-            display: none; /* Ẩn ban đầu */
-            z-index: 10;
-        }
-
-        /* === CSS cho Giao Diện Camera (sẽ nằm trong #cameraAppContainer) === */
-        #cameraAppContainer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            max-width: none;
-            margin: 0;
-            padding: 0;
-            z-index: 9999;
-            background-color: #000;
-            display: none; /* Ẩn ban đầu */
-            flex-direction: column;
-            justify-content: space-between;
-            overflow: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        #cameraAppContainer.active {
-            display: flex;
-        }
-
-        #cameraAppContainer .camera-feed-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        #cameraAppContainer #cameraFeed {
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            display: none;
-            transform: scaleX(-1);
-            object-fit: cover;
-            filter: brightness(0.8);
-        }
-
-        #cameraAppContainer .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            position: relative;
-            z-index: 3;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0));
-            padding-top: calc(15px + env(safe-area-inset-top));
-        }
-
-        #cameraAppContainer .header-left i,
-        #cameraAppContainer .header-right i {
-            font-size: 20px;
-            color: #fff;
-            cursor: pointer;
-            padding: 5px;
-        }
-
-        #cameraAppContainer .header-right .fas.fa-bolt.active {
-            color: yellow;
-        }
-
-        #cameraAppContainer .header-center {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        #cameraAppContainer .header-center .flag-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        #cameraAppContainer .qr-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2;
-        }
-
-        #cameraAppContainer .qr-frame {
-            width: 250px;
-            height: 250px;
-            position: relative;
-            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
-        }
-
-        #cameraAppContainer .corner {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            border: 3px solid #fff;
-            box-sizing: border-box;
-        }
-
-        #cameraAppContainer .top-left {
-            top: 0;
-            left: 0;
-            border-right: none;
-            border-bottom: none;
-            border-top-left-radius: 10px;
-        }
-
-        #cameraAppContainer .top-right {
-            top: 0;
-            right: 0;
-            border-left: none;
-            border-bottom: none;
-            border-top-right-radius: 10px;
-        }
-
-        #cameraAppContainer .bottom-left {
-            bottom: 0;
-            left: 0;
-            border-right: none;
-            border-top: none;
-            border-bottom-left-radius: 10px;
-        }
-
-        #cameraAppContainer .bottom-right {
-            bottom: 0;
-            right: 0;
-            border-left: none;
-            border-top: none;
-            border-bottom-right-radius: 10px;
-        }
-
-        #cameraAppContainer .bottom-content {
-            text-align: center;
-            position: relative;
-            z-index: 3;
-            background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0));
-            padding: 20px 0 40px 0;
-            margin-top: auto;
-        }
-
-        #cameraAppContainer .scan-text {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: #fff;
-        }
-
-        #cameraAppContainer .supported-services {
-            font-size: 14px;
-            color: #ccc;
-            margin-bottom: 30px;
-        }
-
-        #cameraAppContainer .supported-services .highlight {
-            color: #4CAF50;
-            font-weight: bold;
-        }
-
-        #cameraAppContainer .upload-button,
-        #cameraAppContainer .take-photo-button {
-            background-color: rgba(255, 255, 255, 0.15);
-            color: #fff;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-size: 16px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: background-color 0.3s ease;
-            margin: 0 10px 10px 10px;
-        }
-
-        #cameraAppContainer .upload-button:hover,
-        #cameraAppContainer .take-photo-button:hover {
-            background-color: rgba(255, 255, 255, 0.25);
-        }
-
-        #cameraAppContainer .upload-button i,
-        #cameraAppContainer .take-photo-button i {
-            font-size: 18px;
-        }
-
-        #cameraAppContainer .navbar {
-            display: flex;
-            justify-content: center;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 15px 0;
-            position: relative;
-            z-index: 3;
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
-            padding-bottom: calc(15px + env(safe-area-inset-bottom));
-        }
-
-        #cameraAppContainer .nav-button {
-            background-color: transparent;
-            border: none;
-            color: #fff;
-            padding: 10px 20px;
-            margin: 0 5px;
-            border-radius: 20px;
-            font-size: 15px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: background-color 0.3s ease;
-        }
-
-        #cameraAppContainer .nav-button i {
-            font-size: 18px;
-        }
-
-        #cameraAppContainer .nav-button.active {
-            background-color: rgba(255, 255, 255, 0.2);
-            font-weight: bold;
-        }
-
-        #cameraAppContainer .nav-button:not(.active):hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-    `;
-    head.appendChild(styleTag);
-
-    // Thêm link Font Awesome nếu chưa có
     if (!document.querySelector('link[href*="font-awesome"]')) {
         const faLink = document.createElement('link');
         faLink.rel = 'stylesheet';
@@ -308,12 +298,10 @@ function addModuleCss() {
     }
 }
 
-// Hàm để tạo và trả về phần tử HTML của giao diện camera
-function createCameraAppHtmlElements(containerId) {
+function createCameraAppContainer(id) {
     const container = document.createElement('div');
-    container.id = containerId;
+    container.id = id;
 
-    // Camera Feed Container
     const cameraFeedContainer = document.createElement('div');
     cameraFeedContainer.className = 'camera-feed-container';
     const video = document.createElement('video');
@@ -323,7 +311,6 @@ function createCameraAppHtmlElements(containerId) {
     cameraFeedContainer.appendChild(video);
     container.appendChild(cameraFeedContainer);
 
-    // Header
     const header = document.createElement('header');
     header.className = 'header';
 
@@ -358,7 +345,6 @@ function createCameraAppHtmlElements(containerId) {
     header.appendChild(headerRight);
     container.appendChild(header);
 
-    // QR Scan Overlay
     const qrOverlay = document.createElement('div');
     qrOverlay.className = 'qr-overlay';
     const qrFrame = document.createElement('div');
@@ -371,7 +357,6 @@ function createCameraAppHtmlElements(containerId) {
     qrOverlay.appendChild(qrFrame);
     container.appendChild(qrOverlay);
 
-    // Bottom Content
     const bottomContent = document.createElement('div');
     bottomContent.className = 'bottom-content';
 
@@ -402,7 +387,6 @@ function createCameraAppHtmlElements(containerId) {
     bottomContent.appendChild(takePhotoButton);
     container.appendChild(bottomContent);
 
-    // Navigation Bar
     const navbar = document.createElement('nav');
     navbar.className = 'navbar';
 
@@ -417,7 +401,6 @@ function createCameraAppHtmlElements(containerId) {
     navbar.appendChild(navButton2);
     container.appendChild(navbar);
 
-    // Canvas cho chụp ảnh
     const photoCanvas = document.createElement('canvas');
     photoCanvas.id = 'photoCanvas';
     photoCanvas.style.display = 'none';
@@ -426,170 +409,228 @@ function createCameraAppHtmlElements(containerId) {
     return container;
 }
 
+export class CameraApp {
+    constructor(options = {}) {
+        if (!document.documentElement) {
+            document.appendChild(document.createElement('html'));
+        }
+        if (!document.head) {
+            document.documentElement.appendChild(document.createElement('head'));
+        }
+        if (!document.body) {
+            document.documentElement.appendChild(document.createElement('body'));
+        }
 
-// --- Logic Camera Module ---
+        addModuleCss();
 
-let currentCameraModule = null; // Biến để lưu trữ thể hiện của module camera
+        this.options = {
+            containerId: 'cameraAppContainer',
+            onOpen: () => {},
+            onClose: () => {},
+            onPhotoTaken: () => {},
+            onPhotoLoaded: () => {},
+            ...options
+        };
 
-/**
- * Hàm chính để khởi tạo và điều khiển giao diện camera.
- * @param {object} options - Đối tượng chứa các callback.
- * - onOpen: Hàm được gọi khi giao diện camera mở.
- * - onClose: Hàm được gọi khi giao diện camera đóng.
- * - onPhotoTaken: Hàm được gọi khi ảnh được chụp, nhận Base64 của ảnh.
- * - onPhotoLoaded: Hàm được gọi khi ảnh được tải từ máy, nhận Base64 của ảnh.
- * @returns {object} Các hàm công khai (start, stop, takePhoto) để điều khiển module.
- */
-export function createCameraApp(options = {}) {
-    // Nếu đã có một module camera đang hoạt động, trả về nó
-    if (currentCameraModule) {
-        console.warn("Một module camera đã tồn tại. Vui lòng gọi .stop() trước khi tạo lại.");
-        return currentCameraModule;
+        this.cameraAppContainer = null;
+        this.cameraFeed = null;
+        this.uploadButton = null;
+        this.imageUploadInput = null;
+        this.flashButton = null;
+        this.backButton = null;
+        this.takePhotoButton = null;
+        this.photoCanvas = null;
+        this.photoContext = null;
+        this.capturedPhotoDisplay = null;
+        this.openCameraButton = null;
+
+        this.stream = null;
+        this.track = null;
+        this.flashEnabled = false;
+
+        this._isInitialized = false;
     }
 
-    // Đảm bảo DOM cơ bản (head, body) tồn tại
-    if (!document.documentElement) {
-        document.appendChild(document.createElement('html'));
+    init() {
+        if (this._isInitialized) {
+            console.warn("CameraApp đã được khởi tạo. Không cần gọi init() lần nữa.");
+            return;
+        }
+
+        this.cameraAppContainer = createCameraAppContainer(this.options.containerId);
+        document.body.appendChild(this.cameraAppContainer);
+
+        this.openCameraButton = document.createElement('button');
+        this.openCameraButton.id = 'openCameraButton';
+        this.openCameraButton.textContent = 'Mở Giao Diện Camera';
+        document.body.prepend(this.openCameraButton);
+
+        this.capturedPhotoDisplay = document.createElement('img');
+        this.capturedPhotoDisplay.id = 'capturedPhotoDisplay';
+        this.capturedPhotoDisplay.alt = 'Ảnh đã chụp';
+        this.capturedPhotoDisplay.style.display = 'none';
+        document.body.appendChild(this.capturedPhotoDisplay);
+
+        this.cameraFeed = this.cameraAppContainer.querySelector('#cameraFeed');
+        this.uploadButton = this.cameraAppContainer.querySelector('.upload-button');
+        this.imageUploadInput = this.cameraAppContainer.querySelector('#imageUpload');
+        this.flashButton = this.cameraAppContainer.querySelector('.header-right .fas.fa-bolt');
+        this.backButton = this.cameraAppContainer.querySelector('#backButton');
+        this.takePhotoButton = this.cameraAppContainer.querySelector('.take-photo-button');
+        this.photoCanvas = this.cameraAppContainer.querySelector('#photoCanvas');
+        this.photoContext = this.photoCanvas.getContext('2d');
+
+        this._addEventListeners();
+
+        this._isInitialized = true;
+        console.log("CameraApp đã được khởi tạo.");
     }
-    if (!document.head) {
-        document.documentElement.appendChild(document.createElement('head'));
+
+    _addEventListeners() {
+        if (this.openCameraButton) {
+            this.openCameraButton.addEventListener('click', () => this.start());
+        }
+        if (this.backButton) {
+            this.backButton.addEventListener('click', () => this.stop());
+        }
+        if (this.flashButton) {
+            this.flashButton.addEventListener('click', () => this._toggleFlash());
+        }
+        if (this.uploadButton) {
+            this.uploadButton.addEventListener('click', () => {
+                if (this.imageUploadInput) {
+                    this.imageUploadInput.click();
+                }
+            });
+        }
+        if (this.imageUploadInput) {
+            this.imageUploadInput.addEventListener('change', (event) => this._handleImageUpload(event));
+        }
+        if (this.takePhotoButton) {
+            this.takePhotoButton.addEventListener('click', () => this.takePhoto());
+        }
+
+        const navButtons = this.cameraAppContainer.querySelectorAll('.nav-button');
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                navButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                console.log(`Chuyển sang: ${button.textContent.trim()}`);
+            });
+        });
     }
-    if (!document.body) {
-        document.documentElement.appendChild(document.createElement('body'));
-    }
 
-    // Thêm CSS vào tài liệu
-    addModuleCss();
+    async start() {
+        if (!this._isInitialized) {
+            console.error("CameraApp chưa được khởi tạo. Vui lòng gọi init() trước.");
+            return;
+        }
 
-    // Tạo container cho ứng dụng camera và thêm vào body
-    const cameraAppContainerId = 'cameraAppContainer';
-    const cameraAppContainer = createCameraAppHtmlElements(cameraAppContainerId);
-    document.body.appendChild(cameraAppContainer);
-
-    // Tạo nút "Mở Giao Diện Camera" và thẻ img hiển thị ảnh đã chụp
-    const openCameraButton = document.createElement('button');
-    openCameraButton.id = 'openCameraButton';
-    openCameraButton.textContent = 'Mở Giao Diện Camera';
-    document.body.prepend(openCameraButton); // Thêm vào đầu body
-
-    const capturedPhotoDisplay = document.createElement('img');
-    capturedPhotoDisplay.id = 'capturedPhotoDisplay';
-    capturedPhotoDisplay.alt = 'Ảnh đã chụp';
-    capturedPhotoDisplay.style.display = 'none';
-    document.body.appendChild(capturedPhotoDisplay); // Thêm vào body
-
-    // Lấy các phần tử DOM sau khi chúng đã được thêm vào container
-    const cameraFeed = cameraAppContainer.querySelector('#cameraFeed');
-    const uploadButton = cameraAppContainer.querySelector('.upload-button');
-    const imageUploadInput = cameraAppContainer.querySelector('#imageUpload');
-    const flashButton = cameraAppContainer.querySelector('.header-right .fas.fa-bolt');
-    const backButton = cameraAppContainer.querySelector('#backButton');
-    const takePhotoButton = cameraAppContainer.querySelector('.take-photo-button');
-    const photoCanvas = cameraAppContainer.querySelector('#photoCanvas');
-    const photoContext = photoCanvas.getContext('2d');
-
-    let stream = null;
-    let track = null;
-    let flashEnabled = false;
-
-    // Hàm để mở camera và hiển thị trên giao diện
-    async function startCamera() {
-        cameraAppContainer.classList.add('active'); // Hiển thị container
-        openCameraButton.style.display = 'none'; // Ẩn nút mở
-        if (options.onOpen) options.onOpen(); // Callback khi mở
+        this.cameraAppContainer.classList.add('active');
+        if (this.openCameraButton) this.openCameraButton.style.display = 'none';
+        this.options.onOpen();
 
         try {
-            stream = await navigator.mediaDevices.getUserMedia({
+            this.stream = await navigator.mediaDevices.getUserMedia({
                 video: {
-                    facingMode: 'environment', // Ưu tiên camera sau
+                    facingMode: 'environment',
                     width: { ideal: 1280 },
                     height: { ideal: 720 }
                 }
             });
 
-            cameraFeed.srcObject = stream;
-            cameraFeed.style.display = 'block';
+            this.cameraFeed.srcObject = this.stream;
+            this.cameraFeed.style.display = 'block';
 
-            track = stream.getVideoTracks()[0];
+            this.track = this.stream.getVideoTracks()[0];
 
-            if (track && 'torch' in track.getCapabilities()) {
-                flashButton.style.display = 'block';
+            if (this.track && 'torch' in this.track.getCapabilities()) {
+                this.flashButton.style.display = 'block';
             } else {
-                flashButton.style.display = 'none';
+                this.flashButton.style.display = 'none';
             }
 
-            console.log("Camera đã được mở thành công.");
-
-            cameraFeed.onloadedmetadata = () => {
-                cameraFeed.play();
-                if (capturedPhotoDisplay) capturedPhotoDisplay.style.display = 'none';
+            this.cameraFeed.onloadedmetadata = () => {
+                this.cameraFeed.play();
+                if (this.capturedPhotoDisplay) this.capturedPhotoDisplay.style.display = 'none';
             };
+            console.log("Camera đã được mở thành công.");
 
         } catch (err) {
             console.error("Lỗi khi truy cập camera: ", err);
             alert("Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập hoặc thiết bị của bạn không có camera/webcam.");
-            cameraFeed.style.display = 'none';
-            flashButton.style.display = 'none';
-
-            // Nếu lỗi, ẩn lại container và hiện nút mở
-            cameraAppContainer.classList.remove('active');
-            openCameraButton.style.display = 'block';
-            if (options.onClose) options.onClose();
+            this.cameraFeed.style.display = 'none';
+            this.flashButton.style.display = 'none';
+            this.cameraAppContainer.classList.remove('active');
+            if (this.openCameraButton) this.openCameraButton.style.display = 'block';
+            this.options.onClose();
         }
     }
 
-    // Hàm để dừng camera và gỡ bỏ giao diện
-    function stopCamera() {
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-            cameraFeed.srcObject = null;
-            stream = null;
-            track = null;
-            cameraFeed.style.display = 'none';
-            flashButton.style.display = 'none';
-            flashButton.classList.remove('active');
-            flashEnabled = false;
+    stop() {
+        if (this.stream) {
+            this.stream.getTracks().forEach(track => track.stop());
+            this.cameraFeed.srcObject = null;
+            this.stream = null;
+            this.track = null;
+            this.cameraFeed.style.display = 'none';
+            this.flashButton.style.display = 'none';
+            this.flashButton.classList.remove('active');
+            this.flashEnabled = false;
             console.log("Camera đã được dừng.");
         }
-        cameraAppContainer.classList.remove('active'); // Ẩn container
-
-        // Gỡ bỏ các phần tử DOM liên quan đến module khi đóng
-        if (cameraAppContainer.parentNode) {
-            cameraAppContainer.parentNode.removeChild(cameraAppContainer);
-        }
-        if (openCameraButton.parentNode) {
-            openCameraButton.parentNode.removeChild(openCameraButton);
-        }
-        if (capturedPhotoDisplay.parentNode) {
-            capturedPhotoDisplay.parentNode.removeChild(capturedPhotoDisplay);
-        }
-        
-        // Gỡ bỏ style tag nếu muốn
-        const styleTag = document.getElementById('cameraModuleStyle');
-        if (styleTag && styleTag.parentNode) {
-            styleTag.parentNode.removeChild(styleTag);
-        }
-        // Gỡ bỏ Font Awesome link nếu muốn và nếu không có component nào khác dùng nó
-        const faLink = document.querySelector('link[href*="font-awesome"]');
-        if (faLink && faLink.parentNode) {
-             // Cần kiểm tra kỹ xem có component nào khác dùng FA không trước khi gỡ
-            faLink.parentNode.removeChild(faLink);
-        }
-
-        currentCameraModule = null; // Reset biến thể hiện
-        if (options.onClose) options.onClose(); // Callback khi đóng
+        this.cameraAppContainer.classList.remove('active');
+        if (this.openCameraButton) this.openCameraButton.style.display = 'block';
+        this.options.onClose();
     }
 
-    // Hàm bật/tắt flash
-    async function toggleFlash() {
-        if (track && 'torch' in track.getCapabilities()) {
+    takePhoto() {
+        if (!this.stream) {
+            alert("Camera chưa được mở. Vui lòng mở camera trước khi chụp ảnh.");
+            return null;
+        }
+
+        this.photoCanvas.width = this.cameraFeed.videoWidth;
+        this.photoCanvas.height = this.cameraFeed.videoHeight;
+        this.photoContext.drawImage(this.cameraFeed, 0, 0, this.photoCanvas.width, this.photoCanvas.height);
+        const imageDataURL = this.photoCanvas.toDataURL('image/png');
+        console.log("Ảnh đã được chụp và chuyển thành Base64.");
+
+        if (this.capturedPhotoDisplay) {
+            this.capturedPhotoDisplay.src = imageDataURL;
+            this.capturedPhotoDisplay.style.display = 'block';
+        }
+
+        this.options.onPhotoTaken(imageDataURL);
+        return imageDataURL;
+    }
+
+    _handleImageUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (this.options.onPhotoLoaded) this.options.onPhotoLoaded(e.target.result);
+                if (this.capturedPhotoDisplay) {
+                    this.capturedPhotoDisplay.src = e.target.result;
+                    capturedPhotoDisplay.style.display = 'block';
+                }
+                console.log('Ảnh từ máy đã được tải và chuyển thành Base64.');
+            };
+            reader.readAsDataURL(file);
+        }
+        event.target.value = '';
+    }
+
+    async _toggleFlash() {
+        if (this.track && 'torch' in this.track.getCapabilities()) {
             try {
-                await track.applyConstraints({
-                    advanced: [{ torch: !flashEnabled }]
+                await this.track.applyConstraints({
+                    advanced: [{ torch: !this.flashEnabled }]
                 });
-                flashEnabled = !flashEnabled;
-                flashButton.classList.toggle('active', flashEnabled);
-                console.log(`Flash đã ${flashEnabled ? 'bật' : 'tắt'}.`);
+                this.flashEnabled = !this.flashEnabled;
+                this.flashButton.classList.toggle('active', this.flashEnabled);
+                console.log(`Flash đã ${this.flashEnabled ? 'bật' : 'tắt'}.`);
             } catch (err) {
                 console.error("Lỗi khi bật/tắt flash: ", err);
             }
@@ -598,93 +639,27 @@ export function createCameraApp(options = {}) {
         }
     }
 
-    // Hàm chụp ảnh và chuyển sang Base64
-    function takePhotoToBase64() {
-        if (!stream) {
-            alert("Camera chưa được mở. Vui lòng mở camera trước khi chụp ảnh.");
-            return null;
+    destroy() {
+        this.stop();
+
+        if (this.openCameraButton) {
+            this.openCameraButton.removeEventListener('click', () => this.start());
+        }
+        if (this.backButton) {
+            this.backButton.removeEventListener('click', () => this.stop());
         }
 
-        photoCanvas.width = cameraFeed.videoWidth;
-        photoCanvas.height = cameraFeed.videoHeight;
-        photoContext.drawImage(cameraFeed, 0, 0, photoCanvas.width, photoCanvas.height);
-        const imageDataURL = photoCanvas.toDataURL('image/png');
-        console.log("Ảnh đã được chụp và chuyển thành Base64.");
-
-        if (capturedPhotoDisplay) {
-            capturedPhotoDisplay.src = imageDataURL;
-            capturedPhotoDisplay.style.display = 'block';
+        if (this.cameraAppContainer && this.cameraAppContainer.parentNode) {
+            this.cameraAppContainer.parentNode.removeChild(this.cameraAppContainer);
+        }
+        if (this.openCameraButton && this.openCameraButton.parentNode) {
+            this.openCameraButton.parentNode.removeChild(this.openCameraButton);
+        }
+        if (this.capturedPhotoDisplay && this.capturedPhotoDisplay.parentNode) {
+            this.capturedPhotoDisplay.parentNode.removeChild(this.capturedPhotoDisplay);
         }
 
-        if (options.onPhotoTaken) options.onPhotoTaken(imageDataURL);
-
-        return imageDataURL;
+        this._isInitialized = false;
+        console.log("CameraApp đã được hủy.");
     }
-
-    // Gán sự kiện cho các phần tử trong module
-    backButton.addEventListener('click', stopCamera);
-    flashButton.addEventListener('click', toggleFlash);
-    uploadButton.addEventListener('click', () => {
-        imageUploadInput.click();
-    });
-    imageUploadInput.addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                if (options.onPhotoLoaded) options.onPhotoLoaded(e.target.result);
-                if (capturedPhotoDisplay) {
-                    capturedPhotoDisplay.src = e.target.result;
-                    capturedPhotoDisplay.style.display = 'block';
-                }
-                console.log('Ảnh từ máy đã được tải và chuyển thành Base64.');
-            };
-            reader.readAsDataURL(file);
-        }
-        event.target.value = '';
-    });
-    takePhotoButton.addEventListener('click', takePhotoToBase64);
-
-    const navButtons = cameraAppContainer.querySelectorAll('.nav-button');
-    navButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            navButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            console.log(`Chuyển sang: ${button.textContent.trim()}`);
-        });
-    });
-
-    // Gán sự kiện cho nút "Mở Giao Diện Camera" được tạo động
-    openCameraButton.addEventListener('click', startCamera);
-
-    // Lưu thể hiện module vào biến toàn cục
-    currentCameraModule = {
-        start: startCamera,
-        stop: stopCamera,
-        takePhoto: takePhotoToBase64
-    };
-
-    return currentCameraModule;
 }
-
-// Tự động khởi tạo ứng dụng khi DOM đã tải hoàn chỉnh
-document.addEventListener('DOMContentLoaded', () => {
-    // Chỉ tạo ứng dụng nếu nó chưa được tạo
-    if (!document.getElementById('cameraAppContainer')) {
-        createCameraApp({
-            onOpen: () => {
-                console.log("Giao diện camera đã mở.");
-            },
-            onClose: () => {
-                console.log("Giao diện camera đã đóng.");
-            },
-            onPhotoTaken: (base64Image) => {
-                console.log("Ảnh Base64 đã chụp:", base64Image.substring(0, 50) + "...");
-                // Bạn có thể gửi base64Image này lên server hoặc xử lý tiếp
-            },
-            onPhotoLoaded: (base64Image) => {
-                console.log("Ảnh Base64 đã tải từ máy:", base64Image.substring(0, 50) + "...");
-            }
-        });
-    }
-});
