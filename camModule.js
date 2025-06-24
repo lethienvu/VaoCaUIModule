@@ -277,11 +277,11 @@ const CameraModule = (() => {
         }
 
         .vu-camera-app-container .vu-qr-frame {
-            width: 80%;
-            height: calc(100% - 18rem);
+            width: 90%;
+            height: calc(100% - 19rem);
             position: relative;
             box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
-            border-radius: 25% 25% 40% 40%;
+            border-radius: 15% 15% 20% 20%;
         }
 
         .vu-camera-app-container .vu-corner {
@@ -335,7 +335,7 @@ const CameraModule = (() => {
             flex-direction: column;
             align-items: center;
             width: 100%;
-            height: 6rem;
+            height: 12rem;
         }
 
         /* Text elements - not directly used in this version but kept for future use */
@@ -397,12 +397,10 @@ const CameraModule = (() => {
             justify-content: center;
             background-color: transparent;
             margin-top: -3rem;
-            margin-bottom: 1rem;
+            margin-bottom: rem;
             padding: 0;
             position: relative;
             z-index: 2001;
-            /* Width 10% was too small, adjusted for better button layout if needed */
-            /* width: 10%; */
             padding-bottom: calc(15px + env(safe-area-inset-bottom));
         }
 
