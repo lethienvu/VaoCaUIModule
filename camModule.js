@@ -492,8 +492,13 @@ const CameraModule = (() => {
 
         // Vẽ frame hiện tại của video lên canvas
         // Cần lật lại ảnh theo trục X nếu video đang bị lật (-1, 1)
-        _context.translate(_canvasElement.width, 0);
-        _context.scale(-1, 1);
+        // Việc lật này chỉ áp dụng nếu facingMode là 'user' (camera trước)
+        // hoặc nếu video stream tự lật.
+        if (_facingMode === 'user') { // Giả định camera trước cần lật
+            _context.translate(_canvasElement.width, 0);
+            _context.scale(-1, 1);
+        }
+        
         _context.drawImage(_videoElement, 0, 0, _canvasElement.width, _canvasElement.height);
         _context.setTransform(1, 0, 0, 1, 0, 0); // Đặt lại transform cho các lần vẽ sau
 
@@ -638,3 +643,6 @@ const CameraModule = (() => {
         }
     };
 })();
+
+// Export CameraModule như là một default export
+export default CameraModule;
