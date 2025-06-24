@@ -133,7 +133,7 @@ const CameraModule = (() => {
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            z-index: 1;
+            z-index: 1;//1
         }
 
         .vu-camera-app-container .vu-camera-feed {
