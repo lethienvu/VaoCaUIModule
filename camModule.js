@@ -13,7 +13,7 @@
  */
 
 const CameraModule = (() => {
-    // --- Các biến và phần tử DOM nội bộ ---
+    // --- Các biến và phần tử DOM nội bộ -----
     let _videoElement = null;
     let _canvasElement = null;
     let _context = null;
