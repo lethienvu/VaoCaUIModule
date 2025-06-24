@@ -98,15 +98,19 @@ const CameraModule = (() => {
 
         .vu-camera-app-container {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            max-width: none;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90vw; /* Chiều rộng tối đa 90% viewport */
+            max-width: 500px; /* Chiều rộng tối đa trên các màn hình lớn */
+            height: 80vh; /* Chiều cao tối đa 80% viewport */
+            max-height: 700px; /* Chiều cao tối đa */
             margin: 0;
             padding: 0;
             z-index: 9999;
-            background-color: rgba(0, 0, 0, .2);
+            background-color: rgba(0, 0, 0, 0.9); /* Nền tối hơn để nổi bật */
+            border-radius: 15px; /* Bo tròn các góc của container chính */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); /* Thêm bóng đổ */
             display: none; /* Mặc định ẩn */
             flex-direction: column;
             justify-content: space-between;
@@ -137,7 +141,7 @@ const CameraModule = (() => {
             min-height: 100%;
             width: auto;
             height: auto;
-            display: none; /* LUÔN ẨN VIDEO FEED */
+            display: block; /* HIỂN THỊ VIDEO FEED */
             transform: scaleX(-1); /* Lật ngang để giống gương (vẫn cần cho canvas) */
             object-fit: cover;
             filter: brightness(0.8);
@@ -203,11 +207,11 @@ const CameraModule = (() => {
         }
 
         .vu-camera-app-container .vu-qr-frame {
-            width: 90%;
-            height: calc(100% - 19rem);
+            width: 80%;
+            height: calc(100% - 17rem);
             position: relative;
             box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
-            border-radius: 4rem;
+            border-radius: 2rem;
         }
 
         .vu-camera-app-container .vu-corner {
@@ -261,8 +265,7 @@ const CameraModule = (() => {
             flex-direction: column;
             align-items: center;
             width: 100%;
-            margin-top: 1rem;
-            height: 11rem;
+            height: 6rem;
         }
 
         /* Text elements - not directly used in this version but kept for future use */
@@ -324,7 +327,7 @@ const CameraModule = (() => {
             justify-content: center;
             background-color: transparent;
             margin-top: -3rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             padding: 0;
             position: relative;
             z-index: 2001;
@@ -373,8 +376,7 @@ const CameraModule = (() => {
             _stream = null;
             if (_videoElement) {
                 _videoElement.srcObject = null;
-                // Đảm bảo video luôn ẩn khi dừng stream
-                _videoElement.style.display = 'none'; 
+                _videoElement.style.display = 'none'; // Đảm bảo video ẩn khi dừng stream
             }
         }
     };
@@ -393,11 +395,10 @@ const CameraModule = (() => {
         }
 
         try {
-            // Thử khởi động camera với facingMode hiện tại
+            // Thử khởi động camera với facingMode hiện tại và độ phân giải thấp
             _stream = await navigator.mediaDevices.getUserMedia({
                 video: {
                     facingMode: _facingMode,
-                    // Yêu cầu độ phân giải thấp nhất để ưu tiên hiệu suất
                     width: { ideal: 640 },
                     height: { ideal: 480 }
                 }
@@ -405,8 +406,7 @@ const CameraModule = (() => {
 
             _videoElement.srcObject = _stream;
             _videoElement.play();
-            // KHÔNG THAY ĐỔI display của video element tại đây để nó luôn ẩn
-            // _videoElement.style.display = 'block'; // Đã bỏ dòng này
+            _videoElement.style.display = 'block'; // Hiển thị video khi stream sẵn sàng
 
             // Đảm bảo video đã tải đủ siêu dữ liệu để có thể lấy kích thước chính xác
             await new Promise(resolve => {
@@ -604,7 +604,7 @@ const CameraModule = (() => {
 
                 try {
                     await _startCameraStream();
-                    // KHÔNG LÀM GÌ Ở ĐÂY ĐỂ VIDEO ELEMENT LUÔN ẨN
+                    // KHÔNG LÀM GÌ Ở ĐÂY ĐỂ VIDEO ELEMENT HIỂN THỊ THEO CSS
                 } catch (error) {
                     _cameraAppContainer.classList.remove('active'); // Ẩn giao diện nếu lỗi
                     reject(error); // Từ chối Promise nếu không thể khởi động camera
