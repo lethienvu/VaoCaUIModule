@@ -180,7 +180,7 @@ const CameraModule = (() => {
             margin: 0;
             padding: 0;
             z-index: 9999;
-            background-color: rgba(0, 0, 0, .2);
+            background-color: rgba(0, 0, 0, .1);
             display: none; /* Mặc định ẩn */
             flex-direction: column;
             justify-content: space-between;
@@ -203,7 +203,7 @@ const CameraModule = (() => {
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            z-index: 1;
+            z-index: 2001;
         }
 
         .vu-camera-app-container .vu-camera-feed {
@@ -214,7 +214,7 @@ const CameraModule = (() => {
             display: none; /* Ẩn cho đến khi stream sẵn sàng */
             transform: scaleX(-1); /* Lật ngang để giống gương */
             object-fit: cover;
-            filter: brightness(0.8);
+            filter: brightness(0.9);
         }
 
         .vu-camera-app-container .vu-header {
@@ -227,6 +227,7 @@ const CameraModule = (() => {
             background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
             padding-top: calc(15px + env(safe-area-inset-top));
             height: 3rem;
+            margin-top: 0.5rem;
         }
 
         .vu-camera-app-container .vu-header-left {
@@ -235,8 +236,10 @@ const CameraModule = (() => {
             border-radius: 2rem;
             justify-content: center;
             align-items: center;
-            background-color: rgba(255, 255, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.2);
             font-size: 1rem;
+            backdrop-filter: blur(4px); 
+            --webkit-backdrop-filter: blur(4px); 
             color: #fff;
             cursor: pointer; /* Thêm con trỏ cho nút */
         }
@@ -281,13 +284,13 @@ const CameraModule = (() => {
             height: calc(100% - 19rem);
             position: relative;
             box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
-            border-radius: 3rem;
+            border-radius: 2rem;
         }
 
         .vu-camera-app-container .vu-corner {
             position: absolute;
-            width: 1.5rem;
-            height: 1.5rem;
+            width: 2rem;
+            height: 2rem;
             border: 2px solid #fff;
             box-sizing: border-box;
         }
@@ -361,7 +364,7 @@ const CameraModule = (() => {
         .vu-camera-app-container .vu-upload-button,
         .vu-camera-app-container .vu-take-photo-button,
         .vu-camera-app-container .vu-toggle-play-button {
-            background-color: rgba(255, 255, 255, 0.15);
+            background-color: rgba(255, 255, 255, 0.2);
             color: #fff;
             border: none;
             padding: 1rem 3rem;
@@ -374,6 +377,8 @@ const CameraModule = (() => {
             transition: background-color 0.3s ease;
             margin: 0 10px 10px 10px;
             border: 1px solid rgba(255, 255, 255, .4);
+            backdrop-filter: blur(4px); 
+            --webkit-backdrop-filter: blur(4px); 
         }
 
         .vu-camera-app-container .vu-upload-button:hover,
@@ -419,16 +424,12 @@ const CameraModule = (() => {
         }
 
         .vu-camera-app-container .logoFooter svg {
-            transform: scale(0.7); /* Scale SVG inside logo smaller */
+            transform: scale(0.6);
         }
     `;
 
-    /**
-     * Chèn CSS vào tài liệu.
-     */
     const _injectCSS = () => {
         if (document.getElementById('vu-camera-module-style')) {
-            // CSS đã được chèn, không làm gì cả
             return;
         }
         const style = document.createElement('style');
