@@ -223,7 +223,7 @@ const CameraModule = (() => {
             align-items: center;
             padding: 15px 20px;
             position: relative;
-            z-index: 3;
+            z-index: 2020;
             background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
             padding-top: calc(15px + env(safe-area-inset-top));
             height: 3rem;
@@ -276,7 +276,7 @@ const CameraModule = (() => {
             display: flex;
             justify-content: center;
             margin-top: 5rem;
-            z-index: 2;
+            z-index: 2022;
         }
 
         .vu-camera-app-container .vu-qr-frame {
