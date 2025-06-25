@@ -625,6 +625,13 @@ const CameraModule = (() => {
 
             _context = _canvasElement.getContext('2d');
 
+            if (_videoElement) {
+                    _videoElement.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                        _displayMessage('Menu ngữ cảnh đã bị chặn.', false);
+                });
+            }
+
             // Gắn các sự kiện click
             if (_takePhotoButton) {
                 _takePhotoButton.addEventListener('click', () => {
