@@ -6,7 +6,7 @@
  * Module này cung cấp khả năng:
  * - Truy cập camera của thiết bị.
  * - Hiển thị luồng video trực tiếp.
- * - Chụp ảnh từ luồng video.
+ * - Chụp ảnh từ luồng video.//
  * - Chuyển đổi ảnh đã chụp thành định dạng Base64.
  * - Quản lý giao diện camera động (hiển thị/ẩn).
  * - Chuyển đổi camera trước/sau.
@@ -330,7 +330,7 @@ const CameraModule = (() => {
         .vu-camera-app-container .vu-bottom-content {
             text-align: center;
             position: relative;
-            z-index: 2003;
+            z-index: 2110;
             background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
             padding: 20px 0 30px 0;
             margin-top: auto;
