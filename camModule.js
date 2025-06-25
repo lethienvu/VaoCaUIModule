@@ -179,7 +179,7 @@ const CameraModule = (() => {
             max-width: none;
             margin: 0;
             padding: 0;
-            z-index: 9999;
+            z-index: 2001;
             background-color: rgba(0, 0, 0, .1);
             display: none; /* Mặc định ẩn */
             flex-direction: column;
