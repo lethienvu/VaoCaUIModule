@@ -159,7 +159,7 @@ const CameraModule = (() => {
         <img id="vuCapturedPhotoDisplay" class="vu-captured-photo-display" alt="Ảnh đã chụp">
     `;
 
-    // Đây là toàn bộ CSS cho giao diện camera
+    // Đây là toàn bộ CSS cho giao diện camera//
     const _cssTemplate = `
         .vu-captured-photo-display {
             margin-top: 20px;
@@ -223,7 +223,7 @@ const CameraModule = (() => {
             align-items: center;
             padding: 15px 20px;
             position: relative;
-            z-index: 2020;
+            z-index: 2100;
             background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
             padding-top: calc(15px + env(safe-area-inset-top));
             height: 3rem;
@@ -406,7 +406,7 @@ const CameraModule = (() => {
             margin-bottom: 2rem;
             padding: 0;
             position: relative;
-            z-index: 2001;
+            z-index: 2110;
             /* Width 10% was too small, adjusted for better button layout if needed */
             /* width: 10%; */
             padding-bottom: calc(15px + env(safe-area-inset-bottom));
