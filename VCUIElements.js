@@ -165,12 +165,14 @@ class UIElements_VaoCa {
                 align-items: center;
                 justify-content: start;
                 border-radius: 50px;
-                box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+                box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
                 position: relative;
                 opacity: 0;
                 transform: translateX(100%);
                 animation: fadeInRight 0.3s ease-out forwards, fadeOut 0.5s ease-in forwards 4.5s;
                 pointer-events: all; 
+                backdrop-filter: blur(8px) brightness(1.2);
+                --webkit-backdrop-filter: blur(8px);
             }
 
             @keyframes fadeInRight {
@@ -200,22 +202,22 @@ class UIElements_VaoCa {
             }
 
             .alertFastMessgeByVu.error {
-                background: #d10d0d;
-                box-shadow: 0px 2px 8px #d10d0d;
+                background: rgba(209, 13, 13, 0.8);
+                box-shadow: 0px 1px 2px #d10d0d;
             }
 
             .alertFastMessgeByVu.success {
-                background: #269b24;
-                box-shadow: 0px 2px 8px #269b24;
+                background: rgba(38, 155, 36, .8);
+                box-shadow: 0px 1px 2px #269b24;
             }
 
             .alertFastMessgeByVu.notice {
-                background: #509AF8;
-                box-shadow: 0px 2px 8px #509AF8;
+                background: rgba(80, 154, 248, .8);
+                box-shadow: 0px 1px 2px #509AF8;
             }
 
             .alertFastMessgeByVu.warning {
-                background-color: #F7C752;
+                background-color: rgba(247, 199, 82, .8);
                 box-shadow: 0px 2px 8px #F7C752;
             }
             .alertFastMessgeByVu.warning .iconAlert path {
@@ -257,8 +259,8 @@ class UIElements_VaoCa {
                 align-items: center;
                 display: none;
                 z-index: 9999;
-                backdrop-filter: blur(2px) brightness(1.2);
-                --webkit-backdrop-filter: blur(2px);
+                backdrop-filter: blur(1px) brightness(1.2);
+                --webkit-backdrop-filter: blur(1px);
                 animation: fadeIn 0.3s ease-out;
                 color: #fff;
             }
