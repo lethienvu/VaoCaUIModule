@@ -466,6 +466,7 @@ const CameraModule = (() => {
         }
 
         try {
+            _takePhotoButton.disabled = true;
             // Yêu cầu luồng video mà không chỉ định độ phân giải cụ thể.
             // Điều này cho phép trình duyệt chọn độ phân giải mặc định/tối ưu nhất
             // cho hiệu suất và khả năng tương thích trên thiết bị.
