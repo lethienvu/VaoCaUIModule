@@ -352,7 +352,7 @@ class UIElements_VaoCa {
                   width: 100%;
                   height: 100%;
                   background-color: rgba(0, 0, 0, 0.9);
-                  display: flex;
+                  display: none;
                   justify-content: center;
                   align-items: center;
                   z-index: 2000;
@@ -360,6 +360,11 @@ class UIElements_VaoCa {
                    backdrop-filter: blur(2px) brightness(1.2);
                 --webkit-backdrop-filter: blur(2px);
                 }
+
+                #fullscreenImageOverlay.active {
+                display: flex;
+            }
+
 
                 #fullscreenImage {
                   max-width: 95%;
@@ -389,8 +394,8 @@ class UIElements_VaoCa {
                 }
 
                 #closeImageOverlay svg {
-                  width: 40px;
-                  height: 40px;
+                  width: 46px;
+                  height: 46px;
                 }
 
                 #closeImageOverlay:hover {
@@ -419,7 +424,7 @@ class UIElements_VaoCa {
                   border: 1px solid rgba(255, 255, 255, 0.4);
                   padding: 8px 20px;
                   border-radius: 30px;
-                  height: 2.6rem;
+                  height: 36rem;
                 }
 
                 /* NEW: Styles for individual Action Buttons */
@@ -431,7 +436,6 @@ class UIElements_VaoCa {
                   /* Circular buttons */
                   width: 40px;
                   height: 40px;
-                  font-size: 1.2rem;
                   cursor: pointer;
                   display: flex;
                   justify-content: center;
@@ -489,7 +493,7 @@ class UIElements_VaoCa {
                   border-radius: 40px;
                   /* Vertically align items */
                   gap: 8px;
-                  height: 2.6rem;
+                  height: 3.6rem;
                   /* Space between logos and divider */
                   z-index: 2001;
                   background-color: rgba(255, 255, 255, 0.1);
