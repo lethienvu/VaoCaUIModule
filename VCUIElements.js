@@ -1000,23 +1000,25 @@ _shareImage(imageSrc) {
   }
 
   _setupGlobalImageClickListener() {
-    // Lắng nghe sự kiện click trên toàn bộ body
-    // Sử dụng event delegation để bắt các thẻ <img> động
-    document.body.addEventListener("click", (event) => {
-      const clickedElement = event.target;
+   const handleImageActivation = (event) => {
+        const clickedElement = event.target;
 
-      // Kiểm tra xem phần tử được click có phải là thẻ <img> không
-      // và đảm bảo nó không phải là ảnh trong fullscreen overlay để tránh loop
-      // hoặc là ảnh rỗng (window.location.href)
-      if (
-        clickedElement.tagName === "IMG" &&
-        clickedElement.id !== "fullscreenImage" &&
-        clickedElement.src &&
-        clickedElement.src !== window.location.href
-      ) {
-        this.showFullscreenImage(clickedElement.src);
-      }
-    });
+        if (clickedElement.tagName === 'IMG' &&
+            clickedElement.id !== 'fullscreenImage' &&
+            clickedElement.src &&
+            clickedElement.src !== window.location.href &&
+            clickedElement.id !== 'fullscreenLogo1' &&
+            clickedElement.id !== 'fullscreenLogo2'
+        ) {
+            event.preventDefault();
+            console.log("View Image By Vu");
+            this.showFullscreenImage(clickedElement.src);
+        }
+    };
+
+    document.body.addEventListener('click', handleImageActivation);
+    document.body.addEventListener('touchend', handleImageActivation);
+
   }
 
   /**
