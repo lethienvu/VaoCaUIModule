@@ -424,7 +424,7 @@ class UIElements_VaoCa {
                   border: 1px solid rgba(255, 255, 255, 0.4);
                   padding: 8px 20px;
                   border-radius: 30px;
-                  height: 36rem;
+                  height: 3.6rem;
                 }
 
                 /* NEW: Styles for individual Action Buttons */
