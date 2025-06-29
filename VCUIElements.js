@@ -8,6 +8,9 @@ class UIElements_VaoCa {
     this._createPopupContainers();
     this._createAlertContainer();
     this._createLoadingScreen();
+     this._createFullscreenImageOverlay();
+    // NEW: Lắng nghe sự kiện click trên toàn bộ body cho ảnh
+    this._setupGlobalImageClickListener();
   }
 
   _injectStyles() {
@@ -202,23 +205,23 @@ class UIElements_VaoCa {
             }
 
             .alertFastMessgeByVu.error {
-                background: rgba(209, 13, 13, 0.8);
-                box-shadow: 0px 1px 2px #d10d0d;
+                background: rgba(209, 13, 13, 0.7);
+                box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);;
             }
 
             .alertFastMessgeByVu.success {
-                background: rgba(38, 155, 36, .8);
-                box-shadow: 0px 1px 2px #269b24;
+                background: rgba(38, 155, 36, .7);
+                box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
             }
 
             .alertFastMessgeByVu.notice {
-                background: rgba(80, 154, 248, .8);
-                box-shadow: 0px 1px 2px #509AF8;
+                background: rgba(80, 154, 248, .7);
+                box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
             }
 
             .alertFastMessgeByVu.warning {
-                background-color: rgba(247, 199, 82, .8);
-                box-shadow: 0px 2px 8px #F7C752;
+                background-color: rgba(247, 199, 82, .7);
+                box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
             }
             .alertFastMessgeByVu.warning .iconAlert path {
                 fill: #333; 
@@ -342,6 +345,67 @@ class UIElements_VaoCa {
                     transform: rotateX(70deg) rotateZ(630deg);
                 }
             }
+                #fullscreenImageOverlay {
+                  position: fixed;
+                  top: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 100%;
+                  background-color: rgba(0, 0, 0, 0.9);
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  z-index: 2000;
+                  animation: fadeIn 0.3s ease-out;
+                }
+
+                #fullscreenImage {
+                  max-width: 95%;
+                  max-height: 95%;
+                  object-fit: contain;
+                  cursor: pointer;
+                  border-radius: 16px
+                }
+
+                #closeImageOverlay {
+                  position: absolute;
+                  top: 20px;
+                  right: 20px;
+                  background-color: rgba(255, 255, 255, 0.3);
+                  color: white;
+                  border: none;
+                  border-radius: 60px;
+                  width: 120px;
+                  height: 40px;
+                  font-size: 1.2rem;
+                  cursor: pointer;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  z-index: 2001;
+                  transition: background-color 0.2s;
+                }
+
+                #closeImageOverlay svg{
+                  width: 24px;
+                  height: 24px;
+                  margin-right: 10px;
+                }
+
+                #closeImageOverlay:hover {
+                  background-color: rgba(255, 255, 255, 0.5);
+                }
+
+                /* Keyframe cho hiệu ứng fadeIn */
+                @keyframes fadeIn {
+                  from {
+                    opacity: 0;
+                  }
+
+                  to {
+                    opacity: 1;
+                  }
+                }
         `;
     document.head.appendChild(style);
   }
@@ -452,6 +516,36 @@ class UIElements_VaoCa {
     }, 100);
   }
 
+   _setupFullscreenImageOverlayEvents() {
+    // Đóng khi click nút "Đóng"
+    this.closeImageOverlayButton.addEventListener('click', () => {
+      this.hideFullscreenImage();
+    });
+
+    // Đóng khi click vào ảnh (tùy chọn, giống điện thoại)
+    this.fullscreenImage.addEventListener('click', (event) => {
+      // Đảm bảo chỉ đóng khi click trực tiếp vào ảnh, không phải khoảng trống
+      if (event.target === this.fullscreenImage) {
+        this.hideFullscreenImage();
+      }
+    });
+
+    // Đóng khi click vào overlay nhưng không phải ảnh hoặc nút đóng
+    this.fullscreenImageOverlay.addEventListener('click', (event) => {
+        if (event.target === this.fullscreenImageOverlay) {
+            this.hideFullscreenImage();
+        }
+    });
+
+    // Đóng bằng phím ESC
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && this.fullscreenImageOverlay.style.display === 'flex') {
+        this.hideFullscreenImage();
+      }
+    });
+  }
+
+
   /**
    * Sets up event listeners for the info/success/error popup.
    * @param {HTMLElement} overlay The info popup overlay element.
@@ -483,6 +577,34 @@ class UIElements_VaoCa {
     }, 100);
   }
 
+
+  /**
+   * Displays an image in full-screen overlay mode.
+   * @param {string} imageSrc - The source of the image (URL or Base64 data URL).
+   */
+  showFullscreenImage(imageSrc) {
+    if (!this.fullscreenImageOverlay || !this.fullscreenImage) {
+        console.error("Fullscreen image overlay not initialized.");
+        return;
+    }
+    this.fullscreenImage.src = imageSrc;
+    this.fullscreenImageOverlay.classList.add('active'); // Sử dụng class active
+    document.body.style.overflow = 'hidden'; // Ngăn cuộn trang chính
+  }
+
+  /**
+   * Hides the full-screen image overlay.
+   */
+  hideFullscreenImage() {
+    if (!this.fullscreenImageOverlay || !this.fullscreenImage) {
+        return;
+    }
+    this.fullscreenImageOverlay.classList.remove('active'); // Xóa class active
+    this.fullscreenImage.src = ''; // Xóa src để giải phóng bộ nhớ
+    document.body.style.overflow = ''; // Khôi phục cuộn trang chính
+  }
+
+
   /**
    * Helper to show a popup/loading overlay and apply `active` class.
    * @param {HTMLElement} element - The overlay element (popup or loading).
@@ -499,6 +621,25 @@ class UIElements_VaoCa {
   _deactivateOverlay(element) {
     element.classList.remove("active");
     document.body.style.overflow = ""; // Restore scrolling
+  }
+
+  _setupGlobalImageClickListener() {
+    // Lắng nghe sự kiện click trên toàn bộ body
+    // Sử dụng event delegation để bắt các thẻ <img> động
+    document.body.addEventListener('click', (event) => {
+        const clickedElement = event.target;
+
+        // Kiểm tra xem phần tử được click có phải là thẻ <img> không
+        // và đảm bảo nó không phải là ảnh trong fullscreen overlay để tránh loop
+        // hoặc là ảnh rỗng (window.location.href)
+        if (clickedElement.tagName === 'IMG' &&
+            clickedElement.id !== 'fullscreenImage' &&
+            clickedElement.src &&
+            clickedElement.src !== window.location.href) {
+
+            this.showFullscreenImage(clickedElement.src);
+        }
+    });
   }
 
   /**
