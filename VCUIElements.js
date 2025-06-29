@@ -394,8 +394,8 @@ class UIElements_VaoCa {
                 }
 
                 #closeImageOverlay svg {
-                  width: 46px;
-                  height: 46px;
+                  width: 50px;
+                  height: 50px;
                 }
 
                 #closeImageOverlay:hover {
@@ -497,11 +497,13 @@ class UIElements_VaoCa {
                   /* Space between logos and divider */
                   z-index: 2001;
                   background-color: rgba(255, 255, 255, 0.1);
+                   backdrop-filter: blur(8px) brightness(1.2);
+                --webkit-backdrop-filter: blur(8px);
                 }
 
                 /* NEW: Styles for individual Logos */
                 .fullscreen-logo {
-                  transform: scale(0.7);
+                  transform: scale(0.9);
                 }
 
                 /* NEW: Styles for the Divider */
