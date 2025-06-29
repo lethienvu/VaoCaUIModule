@@ -558,7 +558,6 @@ class UIElements_VaoCa {
     this.fullscreenImageOverlay = document.createElement("div");
     this.fullscreenImageOverlay.id = "fullscreenImageOverlay";
     this.fullscreenImageOverlay.innerHTML = `
-        <div id="fullscreenImageOverlay" style="display: -webkit-inline-flex;">
   <img id="fullscreenImage" src="" alt="Full Screen Image">
 
   <button id="closeImageOverlay">
@@ -663,7 +662,6 @@ class UIElements_VaoCa {
       </defs>
     </svg>
   </div>
-</div>
     `;
     document.body.appendChild(this.fullscreenImageOverlay);
 
