@@ -362,8 +362,8 @@ class UIElements_VaoCa {
                 }
 
                 #fullscreenImageOverlay.active {
-                display: flex;
-            }
+                    display: flex;
+                }
 
 
                 #fullscreenImage {
@@ -382,9 +382,8 @@ class UIElements_VaoCa {
                   color: white;
                   border: none;
                   border-radius: 60px;
-                  width: 60px;
-                  height: 60px;
-                  font-size: 1.2rem;
+                  width: 50px;
+                  height: 50px;
                   cursor: pointer;
                   display: flex;
                   justify-content: center;
@@ -394,8 +393,8 @@ class UIElements_VaoCa {
                 }
 
                 #closeImageOverlay svg {
-                  width: 50px;
-                  height: 50px;
+                  width: 40px;
+                  height: 40px;
                 }
 
                 #closeImageOverlay:hover {
@@ -422,20 +421,19 @@ class UIElements_VaoCa {
                   /* Space between buttons */
                   z-index: 2001;
                   border: 1px solid rgba(255, 255, 255, 0.4);
-                  padding: 8px 20px;
+                  padding: 8px 12px;
                   border-radius: 30px;
                   height: 3.6rem;
                 }
 
-                /* NEW: Styles for individual Action Buttons */
                 .image-action-btn {
                   background-color: rgba(255, 255, 255, 0.2);
                   color: white;
                   border: none;
                   border-radius: 50%;
                   /* Circular buttons */
-                  width: 40px;
-                  height: 40px;
+                  width: 36px;
+                  height: 36px;
                   cursor: pointer;
                   display: flex;
                   justify-content: center;
@@ -448,13 +446,12 @@ class UIElements_VaoCa {
                 }
 
                 .image-action-btn svg {
-                  width: 24px;
+                  width: 20px;
                   /* Icon size */
-                  height: 24px;
+                  height: 20px;
                   fill: white;
                 }
 
-                /* NEW: Styles for the Logo */
                 #fullscreenImageLogo {
                   position: absolute;
                   bottom: 20px;
@@ -503,7 +500,7 @@ class UIElements_VaoCa {
 
                 /* NEW: Styles for individual Logos */
                 .fullscreen-logo {
-                  transform: scale(0.9);
+                  transform: scale(0.8);
                 }
 
                 /* NEW: Styles for the Divider */
