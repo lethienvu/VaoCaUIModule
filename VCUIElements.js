@@ -9,7 +9,6 @@ class UIElements_VaoCa {
     this._createAlertContainer();
     this._createLoadingScreen();
     this._createFullscreenImageOverlay();
-    // NEW: Lắng nghe sự kiện click trên toàn bộ body cho ảnh
     this._setupGlobalImageClickListener();
   }
 
