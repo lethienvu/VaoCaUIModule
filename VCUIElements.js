@@ -142,6 +142,16 @@ class UIElements_VaoCa {
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
             }
 
+            /* NEW: Style for the third button */
+            .VC-Vu-btn-third {
+                background-color: #f0ad4e; /* Example color for a warning/neutral third option */
+                color: white;
+            }
+            .VC-Vu-btn-third:hover {
+                background-color: #ec971f;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            }
+
             /* Responsive adjustments for popups */
             @media (max-width: 768px) {
                 .VC-Vu-popup-buttons button {
@@ -554,6 +564,26 @@ class UIElements_VaoCa {
         `;
     document.body.appendChild(this.infoPopupOverlay);
     this._setupInfoPopupEvents(this.infoPopupOverlay);
+
+    // NEW: Three Option Popup Container
+    this.threeOptionPopupOverlay = document.createElement("div");
+    this.threeOptionPopupOverlay.id = "vc-vu-three-option-popup";
+    this.threeOptionPopupOverlay.classList.add("VC-Vu-component-overlay");
+    this.threeOptionPopupOverlay.innerHTML = `
+            <div class="VC-Vu-popup">
+                <button class="exitBtn">×</button>
+                <h2 class="vc-popup-title"></h2>
+                <div class="Vu-VC-popup-icon"></div>
+                <p class="vc-popup-content"></p>
+                <div class="VC-Vu-popup-buttons">
+                    <button class="VC-Vu-btn-cancel vc-btn-cancel"></button>
+                    <button class="VC-Vu-btn-third vc-btn-third"></button>
+                    <button class="VC-Vu-btn-ok vc-btn-ok"></button>
+                </div>
+            </div>
+        `;
+    document.body.appendChild(this.threeOptionPopupOverlay);
+    this._setupThreeOptionPopupEvents(this.threeOptionPopupOverlay);
   }
 
   _createFullscreenImageOverlay() {
@@ -753,6 +783,40 @@ class UIElements_VaoCa {
     exitBtn.addEventListener("click", closePopup);
     // Delay adding overlay click listener to prevent immediate closing
     // after the event that triggered the popup shows up
+    setTimeout(() => {
+      overlay.addEventListener("click", overlayCloseHandler);
+    }, 100);
+  }
+
+  /**
+   * NEW: Sets up event listeners for the three-option popup.
+   * @param {HTMLElement} overlay The three-option popup overlay element.
+   */
+  _setupThreeOptionPopupEvents(overlay) {
+    const exitBtn = overlay.querySelector(".exitBtn");
+    const btnOK = overlay.querySelector(".vc-btn-ok");
+    const btnCancel = overlay.querySelector(".vc-btn-cancel");
+    const btnThird = overlay.querySelector(".vc-btn-third");
+
+    const closePopup = () => {
+      overlay.classList.remove("active");
+      overlay.removeEventListener("click", overlayCloseHandler);
+      document.body.style.overflow = "";
+      btnOK.onclick = null;
+      btnCancel.onclick = null;
+      btnThird.onclick = null;
+    };
+
+    const overlayCloseHandler = (event) => {
+      if (event.target === overlay) {
+        closePopup();
+        if (overlay._onCancelCallback) { // Default to cancel if clicked outside
+          overlay._onCancelCallback();
+        }
+      }
+    };
+
+    exitBtn.addEventListener("click", closePopup);
     setTimeout(() => {
       overlay.addEventListener("click", overlayCloseHandler);
     }, 100);
@@ -1023,6 +1087,8 @@ _shareImage(imageSrc) {
    * @param {string} [options.title="Thông báo"] - The title of the popup.
    * @param {string} [options.content="Nội dung popup"] - The main content of the popup.
    * @param {string} [options.iconSvg=''] - SVG string for the icon.
+   * @param {string} [options.confirmText="Đồng ý"] - Text for the confirm button.
+   * @param {string} [options.cancelText="Hủy"] - Text for the cancel button.
    * @param {Function} [options.onConfirm=null] - Callback function when 'Đồng ý' is clicked.
    * @param {Function} [options.onCancel=null] - Callback function when 'Hủy' is clicked or popup is closed.
    */
@@ -1030,6 +1096,8 @@ _shareImage(imageSrc) {
     title = "Thông báo",
     content = "Nội dung popup",
     iconSvg = "",
+    confirmText = "Đồng ý", // New option for custom confirm button text
+    cancelText = "Hủy",     // New option for custom cancel button text
     onConfirm = null,
     onCancel = null,
   }) {
@@ -1043,6 +1111,8 @@ _shareImage(imageSrc) {
     titleEl.textContent = title;
     contentEl.innerHTML = content;
     iconEl.innerHTML = iconSvg;
+    btnOK.textContent = confirmText;   // Set custom text
+    btnCancel.textContent = cancelText; // Set custom text
 
     overlay._onConfirmCallback = onConfirm;
     overlay._onCancelCallback = onCancel;
@@ -1067,18 +1137,20 @@ _shareImage(imageSrc) {
   }
 
   /**
-   * Displays a success/info/error popup with a single OK button.
+   * Displays an informational popup.
    * @param {Object} options - Options for the popup.
    * @param {string} [options.title="Thông báo"] - The title of the popup.
-   * @param {string} [options.content=""] - The main content of the popup.
+   * @param {string} [options.content="Nội dung popup"] - The main content of the popup.
    * @param {string} [options.iconSvg=''] - SVG string for the icon.
    * @param {Function} [options.onOk=null] - Callback function when 'OK' is clicked or popup is closed.
+   * @param {number} [options.timeout=0] - Duration in milliseconds after which the popup automatically closes. If 0, it stays open until manually closed.
    */
   showInfoPopup({
     title = "Thông báo",
-    content = "",
+    content = "Nội dung popup",
     iconSvg = "",
     onOk = null,
+    timeout = 0, // NEW: Tham số timeout
   }) {
     const overlay = this.infoPopupOverlay;
     const titleEl = overlay.querySelector(".vc-popup-title");
@@ -1092,13 +1164,99 @@ _shareImage(imageSrc) {
 
     overlay._onOkCallback = onOk;
 
+    // Clear any existing timeout to prevent unexpected behavior if popup is re-used
+    if (overlay._timeoutId) {
+      clearTimeout(overlay._timeoutId);
+      overlay._timeoutId = null;
+    }
+
     const closePopup = () => {
       this._deactivateOverlay(overlay);
       overlay._onOkCallback = null;
+      if (overlay._timeoutId) { // Clear timeout when closed manually as well
+        clearTimeout(overlay._timeoutId);
+        overlay._timeoutId = null;
+      }
     };
 
     btnOK.onclick = () => {
       if (overlay._onOkCallback) overlay._onOkCallback();
+      closePopup();
+    };
+
+    this._activateOverlay(overlay);
+
+    // NEW: Tự động đóng popup sau thời gian timeout
+    if (timeout > 0) {
+      overlay._timeoutId = setTimeout(() => {
+        closePopup();
+        if (overlay._onOkCallback) overlay._onOkCallback(); // Call onOk when auto-closed
+      }, timeout);
+    }
+  }
+
+  /**
+   * Displays a popup with three options (confirm, cancel, and a third custom option).
+   * @param {Object} options - Options for the popup.
+   * @param {string} [options.title="Thông báo"] - The title of the popup.
+   * @param {string} [options.content="Nội dung popup"] - The main content of the popup.
+   * @param {string} [options.iconSvg=''] - SVG string for the icon.
+   * @param {string} [options.confirmText="Đồng ý"] - Text for the primary confirm button.
+   * @param {string} [options.cancelText="Hủy"] - Text for the cancel button.
+   * @param {string} [options.thirdOptionText="Tùy chọn khác"] - Text for the third custom button.
+   * @param {Function} [options.onConfirm=null] - Callback function when the primary confirm button is clicked.
+   * @param {Function} [options.onCancel=null] - Callback function when the cancel button or exit button is clicked, or overlay is clicked.
+   * @param {Function} [options.onThirdOption=null] - Callback function when the third custom button is clicked.
+   */
+  showThreeOptionPopup({
+    title = "Thông báo",
+    content = "Nội dung popup",
+    iconSvg = "",
+    confirmText = "Đồng ý",
+    cancelText = "Hủy",
+    thirdOptionText = "Tùy chọn khác",
+    onConfirm = null,
+    onCancel = null,
+    onThirdOption = null,
+  }) {
+    const overlay = this.threeOptionPopupOverlay;
+    const titleEl = overlay.querySelector(".vc-popup-title");
+    const contentEl = overlay.querySelector(".vc-popup-content");
+    const iconEl = overlay.querySelector(".Vu-VC-popup-icon");
+    const btnOK = overlay.querySelector(".vc-btn-ok");
+    const btnCancel = overlay.querySelector(".vc-btn-cancel");
+    const btnThird = overlay.querySelector(".vc-btn-third");
+
+    titleEl.textContent = title;
+    contentEl.innerHTML = content;
+    iconEl.innerHTML = iconSvg;
+    btnOK.textContent = confirmText;
+    btnCancel.textContent = cancelText;
+    btnThird.textContent = thirdOptionText;
+
+    overlay._onConfirmCallback = onConfirm;
+    overlay._onCancelCallback = onCancel;
+    overlay._onThirdOptionCallback = onThirdOption;
+
+    const closePopup = () => {
+      this._deactivateOverlay(overlay);
+      overlay._onConfirmCallback = null;
+      overlay._onCancelCallback = null;
+      overlay._onThirdOptionCallback = null;
+    };
+
+    btnOK.onclick = () => {
+      if (overlay._onConfirmCallback) overlay._onConfirmCallback();
+      closePopup();
+    };
+
+    btnCancel.onclick = () => {
+      if (overlay._onCancelCallback) overlay._onCancelCallback();
+      closePopup();
+    };
+
+    btnThird.onclick = () => {
+      if (overlay._onThirdOptionCallback) overlay._onThirdOptionCallback();
       closePopup();
     };
 
