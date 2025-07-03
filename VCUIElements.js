@@ -1142,6 +1142,7 @@ _shareImage(imageSrc) {
    * @param {string} [options.title="Thông báo"] - The title of the popup.
    * @param {string} [options.content="Nội dung popup"] - The main content of the popup.
    * @param {string} [options.iconSvg=''] - SVG string for the icon.
+   * @param {string} [options.okText="Đã hiểu"] - Text for the OK button. // NEW: Tham số okText
    * @param {Function} [options.onOk=null] - Callback function when 'OK' is clicked or popup is closed.
    * @param {number} [options.timeout=0] - Duration in milliseconds after which the popup automatically closes. If 0, it stays open until manually closed.
    */
@@ -1149,8 +1150,9 @@ _shareImage(imageSrc) {
     title = "Thông báo",
     content = "Nội dung popup",
     iconSvg = "",
+    okText = "Đã hiểu", 
     onOk = null,
-    timeout = 0, // NEW: Tham số timeout
+    timeout = 0,
   }) {
     const overlay = this.infoPopupOverlay;
     const titleEl = overlay.querySelector(".vc-popup-title");
@@ -1161,6 +1163,7 @@ _shareImage(imageSrc) {
     titleEl.textContent = title;
     contentEl.innerHTML = content;
     iconEl.innerHTML = iconSvg;
+    btnOK.textContent = okText; // NEW: Gán văn bản tùy chỉnh cho nút OK
 
     overlay._onOkCallback = onOk;
 
@@ -1186,7 +1189,7 @@ _shareImage(imageSrc) {
 
     this._activateOverlay(overlay);
 
-    // NEW: Tự động đóng popup sau thời gian timeout
+    // Tự động đóng popup sau thời gian timeout
     if (timeout > 0) {
       overlay._timeoutId = setTimeout(() => {
         closePopup();
