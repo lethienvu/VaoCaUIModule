@@ -1,7 +1,7 @@
 //Author: Vũ
 
-const GEOAPIFY_KEY = "YOUR_GEOAPIFY_KEY";
-const OPENCAGE_KEY = "YOUR_OPENCAGE_KEY";
+const GEOAPIFY_KEY = "b175dc9d1a324974866a1be5ba1c7f8a";
+const OPENCAGE_KEY = "dbb6366a185a48cf83e29c322818fe66";
 
 const cache = new Map();
 
