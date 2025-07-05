@@ -110,3 +110,35 @@ export async function getSuggestions(input, lat, lng, radius = 2000) {
   cache.set(key, final);
   return final;
 }
+
+export async function reverseGeocode(lat, lng) {
+  const query = `${lat},${lng}`;
+
+  const urls = {
+    geoapify: `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lng}&lang=vi&apiKey=${GEOAPIFY_KEY}`,
+    opencage: `https://api.opencagedata.com/geocode/v1/json?q=${query}&language=vi&key=${OPENCAGE_KEY}`
+  };
+
+  const fetches = Object.entries(urls).map(([name, url]) =>
+    fetchWithTimeout(url).then(res => ({ name, res }))
+  );
+
+  const all = await Promise.all(fetches);
+  const addresses = [];
+
+  for (const { name, res } of all) {
+    if (!res) continue;
+
+    if (name === "geoapify" && res.features?.length) {
+      const addr = res.features[0].properties.formatted;
+      if (addr) addresses.push(addr);
+    }
+
+    if (name === "opencage" && res.results?.length) {
+      const addr = res.results[0].formatted;
+      if (addr) addresses.push(addr);
+    }
+  }
+
+  return addresses.length ? addresses[0] : null;
+}
