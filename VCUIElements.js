@@ -276,8 +276,8 @@ class UIElements_VaoCa {
                     align-items: center;
                     flex-direction: column;
                     z-index: 9999;
-                    backdrop-filter: blur(4px);
-                    --webkit-backdrop-filter: blur(4px);
+                    backdrop-filter: blur(2px);
+                    --webkit-backdrop-filter: blur(2px);
                     opacity: 0;
                     pointer-events: none;
                     transform: translate(-50%, -50%) scale(0.95) translateY(10px);
