@@ -28,17 +28,21 @@ class UIElements_VaoCa {
                 right: 0;
                 bottom: 0;
                 background-color: rgba(0, 0, 0, 0.2);
-                backdrop-filter: blur(1px);
-                -webkit-backdrop-filter: blur(1px);
-                display: none;
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(2px);
                 justify-content: center;
                 align-items: center;
                 z-index: 9950;
-                transition: opacity 0.3s ease-out;
+                opacity: 0;
+                pointer-events: none;
+                transform: scale(0.95) translateY(10px);
+                transition: all 0.3s ease;
             }
 
             .VC-Vu-component-overlay.active {
-                display: flex;
+                opacity: 1;
+                pointer-events: auto;
+                transform: scale(1) translateY(0);
             }
 
             .VC-Vu-popup {
@@ -47,9 +51,7 @@ class UIElements_VaoCa {
                 min-width: 350px; 
                 background-color: rgba(255, 255, 255, 0.9);
                 border: 1px solid rgba(255, 255, 255, 1);
-                backdrop-filter: blur(8px) brightness(150%);
-                -webkit-backdrop-filter: blur(8px);
-                border-radius: 30px;
+                border-radius: 32px;
                 padding: 3rem 1.5rem;
                 padding-bottom: 1.5rem;
                 display: flex;
@@ -66,13 +68,13 @@ class UIElements_VaoCa {
 
             .VC-Vu-popup .exitBtn {
                 position: absolute;
-                top: 10px;
-                right: 10px;
+                top: 20px;
+                right: 20px;
                 box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.08);
                 background-color: rgb(255, 255, 255);
                 border-radius: 50%;
-                width: 30px;
-                height: 30px;
+                width: 40px;
+                height: 40px;
                 border: none;
                 color: black;
                 font-size: 1.2rem;
@@ -93,16 +95,16 @@ class UIElements_VaoCa {
 
             .VC-Vu-popup h2 {
                 margin: 0 0 1rem;
-                font-size: 1.1rem; 
+                font-size: 1.2rem; 
                 font-weight: bold;
                 color: #004c39;
             }
 
             .VC-Vu-popup p {
-                font-size: 0.8rem;
+                font-size: 0.7rem;
                 margin-top: 2rem;
                 margin-bottom: 0.5rem;
-                line-height: 1.4;
+                line-height: 1.2;
             }
 
             .VC-Vu-popup-buttons {
@@ -116,29 +118,27 @@ class UIElements_VaoCa {
             .VC-Vu-popup-buttons button {
                 padding: 0.4rem 2rem;
                 border: none;
-                border-radius: 30px;
+                border-radius: 32px;
                 cursor: pointer;
                 font-weight: bold;
                 width: 40%;
                 transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-                font-size: 1rem;
+                font-size: 0.9rem;
             }
 
             .VC-Vu-btn-cancel {
-                background-color: #ccc;
-                color: #333;
-            }
-            .VC-Vu-btn-cancel:hover {
-                background-color: #bbb;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+                background-color: #E6F4F1;
+                color: #004c39;
             }
 
             .VC-Vu-btn-ok {
                 background-color: #004c39;
                 color: white;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
             }
             .VC-Vu-btn-ok:hover {
-                background-color: #006b53;
+                background-color: #E6F4F1;
+                color: #004c39;
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
             }
 
@@ -161,7 +161,7 @@ class UIElements_VaoCa {
 
             #vc-vu-alert-container {
                 position: fixed;
-                bottom: 20px;
+                bottom: 70px;
                 right: 20px;
                 display: flex;
                 flex-direction: column;
@@ -553,7 +553,10 @@ class UIElements_VaoCa {
     this.infoPopupOverlay.classList.add("VC-Vu-component-overlay");
     this.infoPopupOverlay.innerHTML = `
             <div class="VC-Vu-popup">
-                <button class="exitBtn">×</button>
+                <button class="exitBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+              </svg></button>
                 <h2 class="vc-popup-title"></h2>
                 <div class="Vu-VC-popup-icon"></div>
                 <p class="vc-popup-content"></p>
@@ -810,7 +813,8 @@ class UIElements_VaoCa {
     const overlayCloseHandler = (event) => {
       if (event.target === overlay) {
         closePopup();
-        if (overlay._onCancelCallback) { // Default to cancel if clicked outside
+        if (overlay._onCancelCallback) {
+          // Default to cancel if clicked outside
           overlay._onCancelCallback();
         }
       }
@@ -865,124 +869,152 @@ class UIElements_VaoCa {
   }
 
   // Trong class UIElements_VaoCa
-_saveImage(imageSrc) {
+  _saveImage(imageSrc) {
     // 1. Kiểm tra ảnh dự phòng (fallback image)
     // Nếu imageSrc là ảnh dự phòng (ví dụ: ảnh camera mặc định khi không tìm thấy ảnh chấm công),
     // chúng ta sẽ không cho phép lưu để tránh lưu ảnh không mong muốn.
-    if (!imageSrc || imageSrc.startsWith('https://st5.depositphotos.com')) {
-        this.showAlert({ type: 'warning', message: 'Không thể lưu ảnh dự phòng.' });
-        return; // Dừng hàm nếu là ảnh dự phòng
+    if (!imageSrc || imageSrc.startsWith("https://st5.depositphotos.com")) {
+      this.showAlert({
+        type: "warning",
+        message: "Không thể lưu ảnh dự phòng.",
+      });
+      return; // Dừng hàm nếu là ảnh dự phòng
     }
 
     try {
-        // 2. Tạo một thẻ <a> ẩn
-        const link = document.createElement('a');
-        // Gán nguồn ảnh cho thuộc tính href của thẻ <a>.
-        // Nếu imageSrc là Base64 Data URL, trình duyệt sẽ hiểu và tải xuống.
-        link.href = imageSrc;
-        // Đặt tên file khi tải xuống. Sử dụng Date.now() để đảm bảo tên file là duy nhất.
-        // Có thể đổi đuôi file (.png, .jpg) tùy thuộc vào định dạng ảnh Base64 của bạn.
-        link.download = `image_${Date.now()}.png`;
+      // 2. Tạo một thẻ <a> ẩn
+      const link = document.createElement("a");
+      // Gán nguồn ảnh cho thuộc tính href của thẻ <a>.
+      // Nếu imageSrc là Base64 Data URL, trình duyệt sẽ hiểu và tải xuống.
+      link.href = imageSrc;
+      // Đặt tên file khi tải xuống. Sử dụng Date.now() để đảm bảo tên file là duy nhất.
+      // Có thể đổi đuôi file (.png, .jpg) tùy thuộc vào định dạng ảnh Base64 của bạn.
+      link.download = `image_${Date.now()}.png`;
 
-        // 3. Thêm thẻ <a> vào DOM (phải có trong DOM mới click được)
-        document.body.appendChild(link);
-        // 4. Kích hoạt sự kiện click trên thẻ <a> để bắt đầu tải xuống
-        link.click();
-        // 5. Xóa thẻ <a> khỏi DOM sau khi đã click xong để giữ DOM sạch sẽ
-        document.body.removeChild(link);
+      // 3. Thêm thẻ <a> vào DOM (phải có trong DOM mới click được)
+      document.body.appendChild(link);
+      // 4. Kích hoạt sự kiện click trên thẻ <a> để bắt đầu tải xuống
+      link.click();
+      // 5. Xóa thẻ <a> khỏi DOM sau khi đã click xong để giữ DOM sạch sẽ
+      document.body.removeChild(link);
 
-        // 6. Hiển thị thông báo thành công cho người dùng
-        this.showAlert({ type: 'success', message: 'Ảnh đã được lưu!' });
+      // 6. Hiển thị thông báo thành công cho người dùng
+      this.showAlert({ type: "success", message: "Ảnh đã được lưu!" });
     } catch (error) {
-        // 7. Xử lý lỗi nếu có vấn đề trong quá trình lưu ảnh
-        console.error("Lỗi khi lưu ảnh:", error);
-        this.showAlert({ type: 'error', message: 'Không thể lưu ảnh.' });
+      // 7. Xử lý lỗi nếu có vấn đề trong quá trình lưu ảnh
+      console.error("Lỗi khi lưu ảnh:", error);
+      this.showAlert({ type: "error", message: "Không thể lưu ảnh." });
     }
-}
+  }
 
-// Trong class UIElements_VaoCa
-_copyImage(imageSrc) {
+  // Trong class UIElements_VaoCa
+  _copyImage(imageSrc) {
     // 2. Kiểm tra xem trình duyệt có hỗ trợ Web Clipboard API không
     if (navigator.clipboard && navigator.clipboard.write) {
-        // 3. Chuyển đổi Data URL (Base64) thành Blob
-        // Dùng fetch API để lấy dữ liệu ảnh từ Data URL và chuyển đổi nó thành Blob.
-        fetch(imageSrc)
-            .then(res => res.blob()) // Lấy phản hồi dưới dạng Blob
-            .then(blob => {
-                // 4. Tạo một ClipboardItem từ Blob
-                // ClipboardItem là một phần của Clipboard API, cho phép sao chép các loại dữ liệu phức tạp.
-                // Chúng ta chỉ định loại MIME của Blob là key và Blob là value.
-                const item = new ClipboardItem({ [blob.type]: blob });
+      // 3. Chuyển đổi Data URL (Base64) thành Blob
+      // Dùng fetch API để lấy dữ liệu ảnh từ Data URL và chuyển đổi nó thành Blob.
+      fetch(imageSrc)
+        .then((res) => res.blob()) // Lấy phản hồi dưới dạng Blob
+        .then((blob) => {
+          // 4. Tạo một ClipboardItem từ Blob
+          // ClipboardItem là một phần của Clipboard API, cho phép sao chép các loại dữ liệu phức tạp.
+          // Chúng ta chỉ định loại MIME của Blob là key và Blob là value.
+          const item = new ClipboardItem({ [blob.type]: blob });
 
-                // 5. Ghi ClipboardItem vào clipboard
-                navigator.clipboard.write([item])
-                    .then(() => {
-                        this.showAlert({ type: 'success', message: 'Ảnh đã được sao chép!' });
-                    })
-                    .catch(err => {
-                        // Xử lý lỗi nếu việc ghi vào clipboard thất bại
-                        console.error("Lỗi khi sao chép ảnh:", err);
-                        this.showAlert({ type: 'error', message: 'Không thể sao chép ảnh.' });
-                    });
+          // 5. Ghi ClipboardItem vào clipboard
+          navigator.clipboard
+            .write([item])
+            .then(() => {
+              this.showAlert({
+                type: "success",
+                message: "Ảnh đã được sao chép!",
+              });
             })
-            .catch(err => {
-                // Xử lý lỗi nếu việc chuyển đổi ảnh sang Blob thất bại
-                console.error("Lỗi khi chuyển đổi ảnh để sao chép:", err);
-                this.showAlert({ type: 'error', message: 'Không thể sao chép ảnh.' });
+            .catch((err) => {
+              // Xử lý lỗi nếu việc ghi vào clipboard thất bại
+              console.error("Lỗi khi sao chép ảnh:", err);
+              this.showAlert({
+                type: "error",
+                message: "Không thể sao chép ảnh.",
+              });
             });
+        })
+        .catch((err) => {
+          // Xử lý lỗi nếu việc chuyển đổi ảnh sang Blob thất bại
+          console.error("Lỗi khi chuyển đổi ảnh để sao chép:", err);
+          this.showAlert({ type: "error", message: "Không thể sao chép ảnh." });
+        });
     } else {
-        // 6. Thông báo nếu trình duyệt không hỗ trợ API
-        this.showAlert({ type: 'warning', message: 'Trình duyệt không hỗ trợ sao chép ảnh.' });
+      // 6. Thông báo nếu trình duyệt không hỗ trợ API
+      this.showAlert({
+        type: "warning",
+        message: "Trình duyệt không hỗ trợ sao chép ảnh.",
+      });
     }
-}
+  }
 
-// Trong class UIElements_VaoCa
-_shareImage(imageSrc) {
+  // Trong class UIElements_VaoCa
+  _shareImage(imageSrc) {
     // 1. Kiểm tra ảnh dự phòng
-    if (!imageSrc || imageSrc.startsWith('https://st5.depositphotos.com')) {
-        this.showAlert({ type: 'warning', message: 'Không thể chia sẻ ảnh dự phòng.' });
-        return;
+    if (!imageSrc || imageSrc.startsWith("https://st5.depositphotos.com")) {
+      this.showAlert({
+        type: "warning",
+        message: "Không thể chia sẻ ảnh dự phòng.",
+      });
+      return;
     }
 
     // 2. Kiểm tra xem trình duyệt có hỗ trợ Web Share API không
     if (navigator.share) {
-        // 3. Chuyển đổi Data URL (Base64) thành Blob và sau đó thành File object
-        fetch(imageSrc)
-            .then(res => res.blob()) // Lấy dữ liệu ảnh dưới dạng Blob
-            .then(blob => {
-                // Tạo một đối tượng File từ Blob.
-                // File object là cần thiết cho Web Share API khi chia sẻ file.
-                const file = new File([blob], `image_${Date.now()}.png`, { type: blob.type });
+      // 3. Chuyển đổi Data URL (Base64) thành Blob và sau đó thành File object
+      fetch(imageSrc)
+        .then((res) => res.blob()) // Lấy dữ liệu ảnh dưới dạng Blob
+        .then((blob) => {
+          // Tạo một đối tượng File từ Blob.
+          // File object là cần thiết cho Web Share API khi chia sẻ file.
+          const file = new File([blob], `image_${Date.now()}.png`, {
+            type: blob.type,
+          });
 
-                // 4. Gọi navigator.share() để mở giao diện chia sẻ của hệ điều hành
-                navigator.share({
-                    files: [file], // Mảng chứa các File để chia sẻ
-                    title: 'Chia sẻ ảnh', // Tiêu đề của chia sẻ
-                    text: 'Xem ảnh này từ ứng dụng của chúng tôi!' // Nội dung text đi kèm
-                })
-                .then(() => {
-                    this.showAlert({ type: 'success', message: 'Ảnh đã được chia sẻ!' });
-                })
-                .catch((error) => {
-                    // Xử lý lỗi hoặc khi người dùng hủy chia sẻ
-                    if (error.name === 'AbortError') {
-                        console.log('Chia sẻ bị hủy.'); // Người dùng đóng giao diện chia sẻ
-                    } else {
-                        console.error("Lỗi khi chia sẻ ảnh:", error);
-                        this.showAlert({ type: 'error', message: 'Không thể chia sẻ ảnh.' });
-                    }
-                });
+          // 4. Gọi navigator.share() để mở giao diện chia sẻ của hệ điều hành
+          navigator
+            .share({
+              files: [file], // Mảng chứa các File để chia sẻ
+              title: "Chia sẻ ảnh", // Tiêu đề của chia sẻ
+              text: "Xem ảnh này từ ứng dụng của chúng tôi!", // Nội dung text đi kèm
             })
-            .catch(err => {
-                // Xử lý lỗi nếu việc chuẩn bị ảnh để chia sẻ thất bại
-                console.error("Lỗi khi chuẩn bị ảnh để chia sẻ:", err);
-                this.showAlert({ type: 'error', message: 'Không thể chia sẻ ảnh.' });
+            .then(() => {
+              this.showAlert({
+                type: "success",
+                message: "Ảnh đã được chia sẻ!",
+              });
+            })
+            .catch((error) => {
+              // Xử lý lỗi hoặc khi người dùng hủy chia sẻ
+              if (error.name === "AbortError") {
+                console.log("Chia sẻ bị hủy."); // Người dùng đóng giao diện chia sẻ
+              } else {
+                console.error("Lỗi khi chia sẻ ảnh:", error);
+                this.showAlert({
+                  type: "error",
+                  message: "Không thể chia sẻ ảnh.",
+                });
+              }
             });
+        })
+        .catch((err) => {
+          // Xử lý lỗi nếu việc chuẩn bị ảnh để chia sẻ thất bại
+          console.error("Lỗi khi chuẩn bị ảnh để chia sẻ:", err);
+          this.showAlert({ type: "error", message: "Không thể chia sẻ ảnh." });
+        });
     } else {
-        // 5. Thông báo nếu trình duyệt không hỗ trợ API
-        this.showAlert({ type: 'warning', message: 'Trình duyệt không hỗ trợ chia sẻ.' });
+      // 5. Thông báo nếu trình duyệt không hỗ trợ API
+      this.showAlert({
+        type: "warning",
+        message: "Trình duyệt không hỗ trợ chia sẻ.",
+      });
     }
-}
+  }
 
   /**
    * Sets up event listeners for the info/success/error popup.
@@ -1060,25 +1092,25 @@ _shareImage(imageSrc) {
   }
 
   _setupGlobalImageClickListener() {
-   const handleImageActivation = (event) => {
-        const clickedElement = event.target;
+    const handleImageActivation = (event) => {
+      const clickedElement = event.target;
 
-        if (clickedElement.tagName === 'IMG' &&
-            clickedElement.id !== 'fullscreenImage' &&
-            clickedElement.src &&
-            clickedElement.src !== window.location.href &&
-            clickedElement.id !== 'fullscreenLogo1' &&
-            clickedElement.id !== 'fullscreenLogo2'
-        ) {
-            event.preventDefault();
-            console.log("View Image By Vu");
-            this.showFullscreenImage(clickedElement.src);
-        }
+      if (
+        clickedElement.tagName === "IMG" &&
+        clickedElement.id !== "fullscreenImage" &&
+        clickedElement.src &&
+        clickedElement.src !== window.location.href &&
+        clickedElement.id !== "fullscreenLogo1" &&
+        clickedElement.id !== "fullscreenLogo2"
+      ) {
+        event.preventDefault();
+        console.log("View Image By Vu");
+        this.showFullscreenImage(clickedElement.src);
+      }
     };
 
-    document.body.addEventListener('click', handleImageActivation);
-    document.body.addEventListener('touchend', handleImageActivation);
-
+    document.body.addEventListener("click", handleImageActivation);
+    document.body.addEventListener("touchend", handleImageActivation);
   }
 
   /**
@@ -1097,7 +1129,7 @@ _shareImage(imageSrc) {
     content = "Nội dung popup",
     iconSvg = "",
     confirmText = "Đồng ý", // New option for custom confirm button text
-    cancelText = "Hủy",     // New option for custom cancel button text
+    cancelText = "Hủy", // New option for custom cancel button text
     onConfirm = null,
     onCancel = null,
   }) {
@@ -1111,7 +1143,7 @@ _shareImage(imageSrc) {
     titleEl.textContent = title;
     contentEl.innerHTML = content;
     iconEl.innerHTML = iconSvg;
-    btnOK.textContent = confirmText;   // Set custom text
+    btnOK.textContent = confirmText; // Set custom text
     btnCancel.textContent = cancelText; // Set custom text
 
     overlay._onConfirmCallback = onConfirm;
@@ -1150,7 +1182,7 @@ _shareImage(imageSrc) {
     title = "Thông báo",
     content = "Nội dung popup",
     iconSvg = "",
-    okText = "Đã hiểu", 
+    okText = "Đã hiểu",
     onOk = null,
     timeout = 0,
   }) {
@@ -1176,7 +1208,8 @@ _shareImage(imageSrc) {
     const closePopup = () => {
       this._deactivateOverlay(overlay);
       overlay._onOkCallback = null;
-      if (overlay._timeoutId) { // Clear timeout when closed manually as well
+      if (overlay._timeoutId) {
+        // Clear timeout when closed manually as well
         clearTimeout(overlay._timeoutId);
         overlay._timeoutId = null;
       }
@@ -1273,7 +1306,7 @@ _shareImage(imageSrc) {
    * @param {string} options.message - The message to display.
    * @param {number} [options.duration=5000] - Duration in milliseconds before the alert fades out.
    */
-  showAlert({ type, message, duration = 5000 }) {
+  showAlert({ type, message, duration = 3500 }) {
     const alertSvgIcons = {
       error: `<svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="m13 13h-2v-6h2zm0 4h-2v-2h2zm-1-15c-1.3132 0-2.61358.25866-3.82683.7612-1.21326.50255-2.31565 1.23915-3.24424 2.16773-1.87536 1.87537-2.92893 4.41891-2.92893 7.07107 0 2.6522 1.05357 5.1957 2.92893 7.0711.92859.9286 2.03098 1.6651 3.24424 2.1677 1.21325.5025 2.51363.7612 3.82683.7612 2.6522 0 5.1957-1.0536 7.0711-2.9289 1.8753-1.8754 2.9289-4.4189 2.9289-7.0711 0-1.3132-.2587-2.61358-.7612-3.82683-.5026-1.21326-1.2391-2.31565-2.1677-3.24424-.9286-.92858-2.031-1.66518-3.2443-2.16773-1.2132-.50254-2.5136-.7612-3.8268-.7612z" fill="#393a37"></path></svg>`,
       success: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`,
