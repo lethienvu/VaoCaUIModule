@@ -265,7 +265,6 @@ class UIElements_VaoCa {
                     position: fixed;
                     top: 50%;
                     left: 50%;
-                    transform: translate(-50%, -50%);
                     display: flex;
                     width: 220px;
                     height: 220px;
@@ -281,14 +280,14 @@ class UIElements_VaoCa {
                     --webkit-backdrop-filter: blur(4px);
                     opacity: 0;
                     pointer-events: none;
-                    transform: scale(0.95) translateY(10px);
+                    transform: translate(-50%, -50%) scale(0.95) translateY(10px);
                     transition: all 0.3s ease;
                 }
 
                  .VC-Vu-component-loading.active {
                       opacity: 1;
                       pointer-events: auto;
-                      transform: scale(1) translateY(0);
+                      transform: translate(-50%, -50%) scale(1) translateY(0);
                   }
 
                 .VC-Vu-component-loading .loadMessage {
@@ -309,7 +308,8 @@ class UIElements_VaoCa {
 
                 .logoVu {
                     fill: none;
-                    stroke-dasharray: 60px;
+                    stroke-dasharray: 80px;
+                    stroke-width: 0.4px;
                     stroke: #fff;
                     animation: load 3s infinite linear;
                 }
