@@ -178,14 +178,14 @@ class UIElements_VaoCa {
                 align-items: center;
                 justify-content: start;
                 border-radius: 50px;
-                box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+                box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
                 position: relative;
                 opacity: 0;
                 transform: translateX(100%);
                 animation: fadeInRight 0.3s ease-out forwards, fadeOut 0.5s ease-in forwards 4.5s;
                 pointer-events: all; 
-                backdrop-filter: blur(8px) brightness(1.2);
-                --webkit-backdrop-filter: blur(8px);
+                backdrop-filter: blur(12px) brightness(1.2);
+                --webkit-backdrop-filter: blur(12px);
             }
 
             @keyframes fadeInRight {
@@ -242,7 +242,7 @@ class UIElements_VaoCa {
 
             .alertMessage {
                 font-weight: 500;
-                font-size: 1rem;
+                font-size: 0.8rem;
                 color: #fff;
                 flex-grow: 1;
                 overflow: hidden;
