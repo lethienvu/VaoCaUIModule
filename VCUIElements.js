@@ -266,8 +266,8 @@ class UIElements_VaoCa {
                     top: 50%;
                     left: 50%;
                     display: flex;
-                    width: 220px;
-                    height: 220px;
+                    width: 180px;
+                    height: 180px;
                     padding: 20px;
                     border-radius: 50px;
                     box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
@@ -292,16 +292,16 @@ class UIElements_VaoCa {
 
                 .VC-Vu-component-loading .loadMessage {
                     color: #fff;
-                    font-size: 0.8rem;
+                    font-size: 0.6rem;
                     margin-top: 10px;
                     text-align: center;
                 }
 
-                .loaderVu {
+                 .loaderVu {
                     overflow: visible;
                     height: fit-content;
                     width: fit-content;
-                    padding: 20px;
+                    padding: 0px 20px;
                     padding-bottom: 0px;
                     display: flex;
                 }
@@ -719,7 +719,7 @@ class UIElements_VaoCa {
     this.loadingScreenElement.classList.add("VC-Vu-component-loading");
     this.loadingScreenElement.innerHTML = `
              <div class="loaderVu">
-        <svg class="logoVu" width="150" height="150" viewBox="0 0 32 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg class="logoVu" width="120" height="120" viewBox="0 0 32 30" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clip-path="url(#clip0_1551_31)">
                 <path
                     d="M19.8477 0.529297C20.648 0.440501 21.4582 0.556632 22.1963 0.867188C22.9334 1.17748 23.5728 1.6698 24.0508 2.29297V2.29395L30.6016 10.875C31.079 11.5006 31.378 12.2361 31.4697 13.0068C31.5616 13.7773 31.4437 14.5581 31.127 15.2715L26.7529 25.0664V25.0674C26.4359 25.7793 25.9303 26.3992 25.2861 26.8643C24.7222 27.271 24.0699 27.5463 23.3799 27.6689L23.082 27.7119L12.1514 28.9531C11.4515 29.0325 10.7437 28.9528 10.083 28.7236L9.80273 28.6162C9.06489 28.3058 8.42609 27.8127 7.94922 27.1875L1.39844 18.6074C0.920976 17.9818 0.622046 17.2464 0.530273 16.4756V16.4746C0.438359 15.7038 0.556957 14.9224 0.874023 14.209L0.873047 14.208L5.24707 4.41504V4.41406C5.56386 3.70172 6.06888 3.08113 6.71289 2.61621C7.35698 2.15128 8.11733 1.85896 8.91699 1.76953H8.91797L19.8467 0.52832L19.8477 0.529297Z"
