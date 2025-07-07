@@ -50,7 +50,7 @@ class UIElements_VaoCa {
                 width: 80%; 
                 max-width: 450px; 
                 min-width: 350px; 
-                background-color: rgba(255, 255, 255, 0.9);
+                background-color: rgba(255, 255, 255, 1);
                 border: 1px solid rgba(255, 255, 255, 1);
                 border-radius: 32px;
                 padding: 3rem 1.5rem;
@@ -308,8 +308,8 @@ class UIElements_VaoCa {
 
                 .logoVu {
                     fill: none;
-                    stroke-dasharray: 80px;
-                    stroke-width: 0.4px;
+                    stroke-dasharray: 50px;
+                    stroke-width: 0.5px;
                     stroke: #fff;
                     animation: load 3s infinite linear;
                 }
