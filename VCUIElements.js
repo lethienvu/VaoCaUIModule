@@ -269,7 +269,7 @@ class UIElements_VaoCa {
                     width: 190px;
                     height: 190px;
                     padding: 30px;
-                    border-radius: 32px;
+                    border-radius: 40px;
                     box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
                     background-color: rgba(0, 0, 0, 0.6);
                     justify-content: center;
