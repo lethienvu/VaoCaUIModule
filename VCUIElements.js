@@ -168,6 +168,7 @@ class UIElements_VaoCa {
                 flex-direction: column;
                 gap: 10px;
                 z-index: 10000; 
+                width: calc(100% - 20px);
             }
 
             .alertFastMessgeByVu {
