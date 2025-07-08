@@ -250,6 +250,12 @@ class UIElements_VaoCa {
             }
 
             @media (max-width: 480px) {
+                #vc-vu-alert-container {
+                    bottom: 70px;
+                    right: 10px;
+                    left: 10px; 
+                    align-items: center;
+                }
                 .alertFastMessgeByVu {
                     width: calc(100% - 20px); 
                 }
