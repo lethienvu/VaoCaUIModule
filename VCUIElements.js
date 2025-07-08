@@ -163,7 +163,7 @@ class UIElements_VaoCa {
             #vc-vu-alert-container {
                 position: fixed;
                 bottom: 70px;
-                right: 20px;
+                right: 10px;
                 display: flex;
                 flex-direction: column;
                 gap: 10px;
@@ -247,18 +247,6 @@ class UIElements_VaoCa {
                 flex-grow: 1;
                 overflow: hidden;
                 text-overflow: ellipsis;
-            }
-
-            @media (max-width: 480px) {
-                #vc-vu-alert-container {
-                    bottom: 10px;
-                    right: 10px;
-                    left: 10px; 
-                    align-items: center;
-                }
-                .alertFastMessgeByVu {
-                    width: calc(100% - 20px); 
-                }
             }
 
                 .VC-Vu-component-loading {
