@@ -171,8 +171,8 @@ class UIElements_VaoCa {
             }
 
             .alertFastMessgeByVu {
-                width: 80%;
-                padding: 12px;
+                width: calc(100% - 20px);
+                padding: 10px;
                 display: flex;
                 flex-direction: row;
                 align-items: center;
