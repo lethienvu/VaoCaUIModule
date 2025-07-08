@@ -171,8 +171,8 @@ class UIElements_VaoCa {
             }
 
             .alertFastMessgeByVu {
-                width: calc(100% - 20px);
-                padding: 10px;
+                width: 80%;
+                padding: 12px;
                 display: flex;
                 flex-direction: row;
                 align-items: center;
@@ -247,6 +247,12 @@ class UIElements_VaoCa {
                 flex-grow: 1;
                 overflow: hidden;
                 text-overflow: ellipsis;
+            }
+
+            @media (max-width: 480px) {
+                .alertFastMessgeByVu {
+                    width: calc(100% - 20px); 
+                }
             }
 
                 .VC-Vu-component-loading {
