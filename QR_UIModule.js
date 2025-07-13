@@ -90,10 +90,11 @@ export function createQrDisplayModule(userName, qrImageUrl, targetElementId = 'q
             width: calc(100% - 40px);
             margin: 30px 20px;
             background: linear-gradient(290deg, #EAF6FF 9.78%, #F3FFE9 109.56%);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
             overflow: hidden;
-            position: relative;
+            position: absolute;
             border-radius: 32px;
+            z-index: 2000;
         }
 
         .containerQRByVu .header {
