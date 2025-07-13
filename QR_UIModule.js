@@ -134,7 +134,7 @@ export function createQrDisplayModule(userName, qrImageUrl, targetElementId = 'q
             height: 240px;
             border: 3px solid #004c39;
             background-color: #004c39;
-            border-radius: 40px;
+            border-radius: 16px;
             margin-bottom: 20px;
             overflow: hidden;
             display: flex;
@@ -143,8 +143,8 @@ export function createQrDisplayModule(userName, qrImageUrl, targetElementId = 'q
         }
 
         .containerQRByVu .qr-image {
-            width: 80%;
-            height: 80%;
+            width: 90%;
+            height: 90%;
             object-fit: contain;
         }
 
