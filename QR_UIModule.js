@@ -275,12 +275,24 @@ export function createQrDisplayModule(userName, qrImageUrl, targetElementId = 'q
             return;
         }
 
-        let filePath = qrImageUrl.replace(/^data:image\/png;base64,/, '');
+        let filePathR = '';
+        await apimobileAjaxAsync(
+            {
+                success: function (data) {
+                    console.log('🚀 ~ success:function ~ data:', data);
+                    filePathR = data;
+                },
+            },
+            {
+                MethodName: 'MergeFileSplit',
+                prs: [qrImageUrl, 0, 1, 'ScanQrDevice', 'ScanQrDevice', ''],
+            }
+        );
 
-        const fileName = 'QRCode';
+        const fileName = 'ScanQrDevice';
         const tmpData = {
             MethodName: 'MobileShareFileAsync',
-            prs: [filePath, fileName],
+            prs: [filePathR, fileName],
         };
 
         const option = {
