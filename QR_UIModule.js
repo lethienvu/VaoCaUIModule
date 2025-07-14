@@ -285,7 +285,7 @@ export function createQrDisplayModule(userName, qrImageUrl, targetElementId = 'q
             },
             {
                 MethodName: 'MergeFileSplit',
-                prs: [filePath, 0, 1, 'ScanQrDevice', 'ScanQrDevice', ''],
+                prs: [filePath, 0, 1, 'ScanQrDevice.jpg', 'ScanQrDevice.jpg', ''],
             }
         );
 
