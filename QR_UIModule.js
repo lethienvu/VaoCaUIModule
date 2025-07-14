@@ -277,10 +277,10 @@ export function createQrDisplayModule(userName, qrImageUrl, targetElementId = 'q
 
         let filePath = qrImageUrl.replace(/^data:image\/png;base64,/, '');
 
-        const fileName = 'QRCode.png';
+        const fileName = 'QRCode';
         const tmpData = {
             MethodName: 'MobileShareFileAsync',
-            prs: [safeDecodeURIComponent(filePath), safeDecodeURIComponent(fileName)],
+            prs: [filePath, fileName],
         };
 
         const option = {
@@ -305,7 +305,7 @@ export function createQrDisplayModule(userName, qrImageUrl, targetElementId = 'q
         if (downloadButton) {
             downloadButton.addEventListener('click', async () => {
                 try {
-                    let imageDataUrl = qrImageUrl;
+                    let imageDataUrl = qrImageUrl.replace(/,"QRCode\.png"/, '');
 
                     const link = document.createElement('a');
                     link.href = imageDataUrl;
