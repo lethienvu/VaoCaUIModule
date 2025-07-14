@@ -274,7 +274,7 @@ export function createQrDisplayModule(userName, qrImageUrl, targetElementId = 'q
             alert('Chức năng chia sẻ hiện chỉ hỗ trợ trong ứng dụng di động!');
             return;
         }
-
+        let filePath = qrImageUrl.replace(/^data:image\/png;base64,/, '');
         let filePathR = '';
         await apimobileAjaxAsync(
             {
@@ -285,11 +285,11 @@ export function createQrDisplayModule(userName, qrImageUrl, targetElementId = 'q
             },
             {
                 MethodName: 'MergeFileSplit',
-                prs: [qrImageUrl, 0, 1, 'ScanQrDevice', 'ScanQrDevice', ''],
+                prs: [filePath, 0, 1, 'ScanQrDevice', 'ScanQrDevice', ''],
             }
         );
 
-        const fileName = 'ScanQrDevice';
+        const fileName = 'ScanQrDevice.jpg';
         const tmpData = {
             MethodName: 'MobileShareFileAsync',
             prs: [filePathR, fileName],
@@ -300,7 +300,7 @@ export function createQrDisplayModule(userName, qrImageUrl, targetElementId = 'q
             error: (err) => console.error('❌ Chia sẻ thất bại:', err),
         };
 
-        apimobileAjax(option, tmpData);
+        await apimobileAjax(option, tmpData);
     }
 
     // Function to set up event listeners
