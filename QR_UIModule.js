@@ -269,29 +269,13 @@ export function createQrDisplayModule(userName, qrImageUrl, targetElementId = 'q
         document.head.appendChild(style);
     }
 
-    function imageUrlToBase64(url) {
-        return fetch(url)
-            .then((response) => response.blob())
-            .then((blob) => {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => resolve(reader.result);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(blob);
-                });
-            });
-    }
-
     async function shareQrImage(qrImageUrl) {
         if (typeof apimobileAjax !== 'function') {
             alert('Chức năng chia sẻ hiện chỉ hỗ trợ trong ứng dụng di động!');
             return;
         }
 
-        let filePath = qrImageUrl;
-        if (!qrImageUrl.startsWith('data:image')) {
-            filePath = await imageUrlToBase64(qrImageUrl);
-        }
+        let filePath = qrImageUrl.replace(/^data:image\/png;base64,/, '');
 
         const fileName = 'QRCode.png';
         const tmpData = {
@@ -322,11 +306,6 @@ export function createQrDisplayModule(userName, qrImageUrl, targetElementId = 'q
             downloadButton.addEventListener('click', async () => {
                 try {
                     let imageDataUrl = qrImageUrl;
-
-                    // Nếu không phải dạng base64, thì convert sang base64
-                    if (!qrImageUrl.startsWith('data:image')) {
-                        imageDataUrl = await imageUrlToBase64(qrImageUrl);
-                    }
 
                     const link = document.createElement('a');
                     link.href = imageDataUrl;
