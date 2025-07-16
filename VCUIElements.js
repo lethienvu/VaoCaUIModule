@@ -1732,9 +1732,4 @@ class UIElements_VaoCa {
 }
 
 // Export a singleton instance of the UIElements class
-window.uiManager = new UIElements_VaoCa();
-
-// For ES6 modules
-if (typeof module !== "undefined" && module.exports) {
-  module.exports = { uiManager: window.uiManager };
-}
+export const uiManager = new UIElements_VaoCa();
