@@ -331,27 +331,94 @@ class UIElements_VaoCa {
                   left: 0;
                   width: 100%;
                   height: 100%;
-                  background-color: rgba(0, 0, 0, 0.9);
+                  background-color: rgba(0, 0, 0, 0.95);
                   display: none;
                   justify-content: center;
                   align-items: center;
                   z-index: 2000;
                   animation: fadeIn 0.3s ease-out;
-                   backdrop-filter: blur(2px) brightness(1.2);
-                --webkit-backdrop-filter: blur(2px);
+                  backdrop-filter: blur(2px) brightness(1.2);
+                  -webkit-backdrop-filter: blur(2px);
+                  -webkit-overflow-scrolling: touch;
+                  overscroll-behavior: contain;
+                  touch-action: manipulation;
+                  -webkit-touch-callout: none;
+                  -webkit-user-select: none;
+                  -khtml-user-select: none;
+                  -moz-user-select: none;
+                  -ms-user-select: none;
+                  user-select: none;
+                }
+
+                /* Mobile specific optimizations */
+                @media (max-width: 768px) {
+                  #fullscreenImageOverlay {
+                    background-color: rgba(0, 0, 0, 0.98);
+                    backdrop-filter: none;
+                    -webkit-backdrop-filter: none;
+                    height: 100vh;
+                    height: 100dvh; /* Dynamic viewport height for mobile */
+                    width: 100vw;
+                    overflow: hidden;
+                    position: fixed;
+                    -webkit-transform: translateZ(0);
+                    transform: translateZ(0);
+                    will-change: auto;
+                  }
                 }
 
                 #fullscreenImageOverlay.active {
                     display: flex;
                 }
 
-
                 #fullscreenImage {
-                  max-width: 95%;
-                  max-height: 95%;
+                  max-width: 100%;
+                  max-height: 100%;
+                  width: auto;
+                  height: auto;
                   object-fit: contain;
                   cursor: pointer;
-                  border-radius: 16px
+                  border-radius: 16px;
+                  image-rendering: -webkit-optimize-contrast;
+                  image-rendering: crisp-edges;
+                  image-rendering: pixelated;
+                  -webkit-touch-callout: none;
+                  -webkit-user-select: none;
+                  -khtml-user-select: none;
+                  -moz-user-select: none;
+                  -ms-user-select: none;
+                  user-select: none;
+                  transition: transform 0.3s ease;
+                  transform-origin: center center;
+                  will-change: transform;
+                }
+
+                /* Responsive optimizations for mobile */
+                @media (max-width: 768px) {
+                  #fullscreenImage {
+                    max-width: 100vw;
+                    max-height: 100vh;
+                    width: auto;
+                    height: auto;
+                    object-fit: contain;
+                    image-rendering: -webkit-optimize-contrast;
+                    image-rendering: high-quality;
+                    -webkit-optimize-contrast: auto;
+                    backface-visibility: hidden;
+                    -webkit-backface-visibility: hidden;
+                    perspective: 1000px;
+                    -webkit-perspective: 1000px;
+                  }
+                }
+
+                /* High DPI display optimization */
+                @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+                  #fullscreenImage {
+                    image-rendering: -webkit-optimize-contrast;
+                    image-rendering: crisp-edges;
+                    -webkit-font-smoothing: antialiased;
+                    -moz-osx-font-smoothing: grayscale;
+                  }
                 }
 
                 #closeImageOverlay {
@@ -842,13 +909,47 @@ class UIElements_VaoCa {
       this._shareImage(this.fullscreenImage.src);
     });
 
-    // Đóng khi click vào ảnh (tùy chọn, giống điện thoại)
-    this.fullscreenImage.addEventListener("click", (event) => {
-      // Đảm bảo chỉ đóng khi click trực tiếp vào ảnh, không phải khoảng trống
-      if (event.target === this.fullscreenImage) {
-        this.hideFullscreenImage();
+    // Improved touch/click handling for mobile
+    let lastTapTime = 0;
+    const handleImageInteraction = (event) => {
+      event.stopPropagation();
+
+      // Check if this is a touch device
+      const isTouchDevice =
+        "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
+      if (isTouchDevice) {
+        // On touch devices, only close on double tap when not zoomed
+        const currentTime = Date.now();
+        const timeDiff = currentTime - lastTapTime;
+
+        if (timeDiff < 300 && timeDiff > 0) {
+          // Double tap detected
+          const currentScale = this.fullscreenImage.style.transform.includes(
+            "scale"
+          )
+            ? parseFloat(
+                this.fullscreenImage.style.transform.match(
+                  /scale\(([^)]+)\)/
+                )?.[1] || 1
+              )
+            : 1;
+
+          if (currentScale <= 1) {
+            this.hideFullscreenImage();
+          }
+        }
+        lastTapTime = currentTime;
+      } else {
+        // On desktop, single click to close
+        if (event.target === this.fullscreenImage) {
+          this.hideFullscreenImage();
+        }
       }
-    });
+    };
+
+    this.fullscreenImage.addEventListener("click", handleImageInteraction);
+    this.fullscreenImage.addEventListener("touchend", handleImageInteraction);
 
     // Đóng khi click vào overlay nhưng không phải ảnh hoặc nút đóng
     this.fullscreenImageOverlay.addEventListener("click", (event) => {
@@ -1056,9 +1157,47 @@ class UIElements_VaoCa {
       console.error("Fullscreen image overlay not initialized.");
       return;
     }
-    this.fullscreenImage.src = imageSrc;
-    this.fullscreenImageOverlay.classList.add("active"); // Sử dụng class active
-    document.body.style.overflow = "hidden"; // Ngăn cuộn trang chính
+
+    // Reset any existing transforms
+    this.fullscreenImage.style.transform = "scale(1) translate(0, 0)";
+
+    // Tạo ảnh tạm để kiểm tra kích thước và tối ưu chất lượng
+    const tempImage = new Image();
+    tempImage.crossOrigin = "anonymous";
+
+    tempImage.onload = () => {
+      // Tối ưu hóa cho ảnh chất lượng cao
+      this.fullscreenImage.style.imageRendering =
+        tempImage.width > 1920 ? "crisp-edges" : "high-quality";
+      this.fullscreenImage.src = imageSrc;
+
+      // Thêm meta viewport cho mobile optimization
+      let viewport = document.querySelector("meta[name=viewport]");
+      if (!viewport) {
+        viewport = document.createElement("meta");
+        viewport.name = "viewport";
+        document.head.appendChild(viewport);
+      }
+      const originalViewport = viewport.content;
+      viewport.content =
+        "width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes";
+
+      // Lưu viewport gốc để khôi phục sau
+      this.fullscreenImageOverlay._originalViewport = originalViewport;
+    };
+
+    tempImage.onerror = () => {
+      // Nếu có lỗi, vẫn hiển thị ảnh nhưng với cài đặt mặc định
+      this.fullscreenImage.src = imageSrc;
+    };
+
+    tempImage.src = imageSrc;
+
+    this.fullscreenImageOverlay.classList.add("active");
+    document.body.style.overflow = "hidden";
+
+    // Thêm touch gestures cho mobile
+    this._setupImageTouchGestures();
   }
 
   /**
@@ -1068,9 +1207,21 @@ class UIElements_VaoCa {
     if (!this.fullscreenImageOverlay || !this.fullscreenImage) {
       return;
     }
-    this.fullscreenImageOverlay.classList.remove("active"); // Xóa class active
-    this.fullscreenImage.src = ""; // Xóa src để giải phóng bộ nhớ
-    document.body.style.overflow = ""; // Khôi phục cuộn trang chính
+
+    this.fullscreenImageOverlay.classList.remove("active");
+    this.fullscreenImage.src = "";
+    this.fullscreenImage.style.transform = "scale(1) translate(0, 0)";
+    document.body.style.overflow = "";
+
+    // Khôi phục viewport gốc
+    const viewport = document.querySelector("meta[name=viewport]");
+    if (viewport && this.fullscreenImageOverlay._originalViewport) {
+      viewport.content = this.fullscreenImageOverlay._originalViewport;
+      delete this.fullscreenImageOverlay._originalViewport;
+    }
+
+    // Xóa touch gestures
+    this._removeTouchGestures();
   }
 
   /**
@@ -1362,7 +1513,228 @@ class UIElements_VaoCa {
   hideLoading() {
     this._deactivateOverlay(this.loadingScreenElement);
   }
+
+  /**
+   * Thiết lập touch gestures cho zoom và pan ảnh trên mobile
+   */
+  _setupImageTouchGestures() {
+    if (!this.fullscreenImage) return;
+
+    let scale = 1;
+    let translateX = 0;
+    let translateY = 0;
+    let lastTouchDistance = 0;
+    let lastTouchCenter = { x: 0, y: 0 };
+    let isZooming = false;
+    let isPanning = false;
+    let lastTouchTime = 0;
+
+    const minScale = 1;
+    const maxScale = 4;
+
+    // Double tap to zoom
+    const handleDoubleClick = (e) => {
+      e.preventDefault();
+      const now = Date.now();
+      if (now - lastTouchTime < 300) {
+        if (scale === 1) {
+          scale = 2;
+          const rect = this.fullscreenImage.getBoundingClientRect();
+          const centerX = e.clientX || e.touches[0].clientX;
+          const centerY = e.clientY || e.touches[0].clientY;
+
+          translateX = (rect.width / 2 - centerX) * (scale - 1);
+          translateY = (rect.height / 2 - centerY) * (scale - 1);
+        } else {
+          scale = 1;
+          translateX = 0;
+          translateY = 0;
+        }
+        this._updateImageTransform(scale, translateX, translateY);
+      }
+      lastTouchTime = now;
+    };
+
+    // Touch start
+    const handleTouchStart = (e) => {
+      e.preventDefault();
+
+      if (e.touches.length === 2) {
+        isZooming = true;
+        isPanning = false;
+
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        lastTouchDistance = Math.sqrt(
+          Math.pow(touch2.clientX - touch1.clientX, 2) +
+            Math.pow(touch2.clientY - touch1.clientY, 2)
+        );
+
+        lastTouchCenter = {
+          x: (touch1.clientX + touch2.clientX) / 2,
+          y: (touch1.clientY + touch2.clientY) / 2,
+        };
+      } else if (e.touches.length === 1 && scale > 1) {
+        isPanning = true;
+        isZooming = false;
+
+        lastTouchCenter = {
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY,
+        };
+      }
+    };
+
+    // Touch move
+    const handleTouchMove = (e) => {
+      e.preventDefault();
+
+      if (isZooming && e.touches.length === 2) {
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        const currentDistance = Math.sqrt(
+          Math.pow(touch2.clientX - touch1.clientX, 2) +
+            Math.pow(touch2.clientY - touch1.clientY, 2)
+        );
+
+        if (lastTouchDistance > 0) {
+          const scaleChange = currentDistance / lastTouchDistance;
+          scale = Math.min(Math.max(scale * scaleChange, minScale), maxScale);
+
+          // Adjust translation to zoom toward touch center
+          const currentCenter = {
+            x: (touch1.clientX + touch2.clientX) / 2,
+            y: (touch1.clientY + touch2.clientY) / 2,
+          };
+
+          const rect = this.fullscreenImage.getBoundingClientRect();
+          const scaleRatio = scale / (scale / scaleChange);
+
+          translateX =
+            (currentCenter.x - rect.width / 2) * (1 - scaleRatio) +
+            translateX * scaleRatio;
+          translateY =
+            (currentCenter.y - rect.height / 2) * (1 - scaleRatio) +
+            translateY * scaleRatio;
+
+          this._updateImageTransform(scale, translateX, translateY);
+        }
+
+        lastTouchDistance = currentDistance;
+        lastTouchCenter = {
+          x: (touch1.clientX + touch2.clientX) / 2,
+          y: (touch1.clientY + touch2.clientY) / 2,
+        };
+      } else if (isPanning && e.touches.length === 1) {
+        const currentTouch = {
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY,
+        };
+
+        const deltaX = currentTouch.x - lastTouchCenter.x;
+        const deltaY = currentTouch.y - lastTouchCenter.y;
+
+        translateX += deltaX;
+        translateY += deltaY;
+
+        // Constrain translation
+        const rect = this.fullscreenImage.getBoundingClientRect();
+        const maxTranslateX = (rect.width * (scale - 1)) / 2;
+        const maxTranslateY = (rect.height * (scale - 1)) / 2;
+
+        translateX = Math.min(
+          Math.max(translateX, -maxTranslateX),
+          maxTranslateX
+        );
+        translateY = Math.min(
+          Math.max(translateY, -maxTranslateY),
+          maxTranslateY
+        );
+
+        this._updateImageTransform(scale, translateX, translateY);
+
+        lastTouchCenter = currentTouch;
+      }
+    };
+
+    // Touch end
+    const handleTouchEnd = (e) => {
+      if (e.touches.length === 0) {
+        isZooming = false;
+        isPanning = false;
+        lastTouchDistance = 0;
+      } else if (e.touches.length === 1) {
+        isZooming = false;
+        if (scale > 1) {
+          isPanning = true;
+          lastTouchCenter = {
+            x: e.touches[0].clientX,
+            y: e.touches[0].clientY,
+          };
+        }
+      }
+    };
+
+    // Lưu trữ event handlers để có thể remove sau
+    this._imageGestureHandlers = {
+      touchStart: handleTouchStart,
+      touchMove: handleTouchMove,
+      touchEnd: handleTouchEnd,
+      doubleClick: handleDoubleClick,
+    };
+
+    // Thêm event listeners
+    this.fullscreenImage.addEventListener("touchstart", handleTouchStart, {
+      passive: false,
+    });
+    this.fullscreenImage.addEventListener("touchmove", handleTouchMove, {
+      passive: false,
+    });
+    this.fullscreenImage.addEventListener("touchend", handleTouchEnd, {
+      passive: false,
+    });
+    this.fullscreenImage.addEventListener("click", handleDoubleClick);
+  }
+
+  /**
+   * Cập nhật transform của ảnh
+   */
+  _updateImageTransform(scale, translateX, translateY) {
+    if (this.fullscreenImage) {
+      this.fullscreenImage.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
+    }
+  }
+
+  /**
+   * Xóa touch gesture event listeners
+   */
+  _removeTouchGestures() {
+    if (this.fullscreenImage && this._imageGestureHandlers) {
+      this.fullscreenImage.removeEventListener(
+        "touchstart",
+        this._imageGestureHandlers.touchStart
+      );
+      this.fullscreenImage.removeEventListener(
+        "touchmove",
+        this._imageGestureHandlers.touchMove
+      );
+      this.fullscreenImage.removeEventListener(
+        "touchend",
+        this._imageGestureHandlers.touchEnd
+      );
+      this.fullscreenImage.removeEventListener(
+        "click",
+        this._imageGestureHandlers.doubleClick
+      );
+      delete this._imageGestureHandlers;
+    }
+  }
 }
 
 // Export a singleton instance of the UIElements class
-export const uiManager = new UIElements_VaoCa();
+window.uiManager = new UIElements_VaoCa();
+
+// For ES6 modules
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { uiManager: window.uiManager };
+}
