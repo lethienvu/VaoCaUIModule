@@ -10,6 +10,7 @@
  */
 export function createQrDisplayModule(userName, qrImageUrl, targetElementId = 'qr-display-container') {
     const htmlContent = `
+        <div class="qr-popup-overlay">
         <div class="containerQRByVu">
             <div class="header">
                 <div class="close-icon">
@@ -83,16 +84,30 @@ export function createQrDisplayModule(userName, qrImageUrl, targetElementId = 'q
                 </div>
             </div>
         </div>
+        </div>
     `;
 
     const cssContent = `
+        .qr-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1999;
+        }
+    
         .containerQRByVu {
             width: calc(100% - 40px);
             margin: 30px 20px;
             background: linear-gradient(290deg, #EAF6FF 9.78%, #F3FFE9 109.56%);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
             overflow: hidden;
-            position: absolute;
+            position: relative;
             border-radius: 32px;
             z-index: 2000;
         }
@@ -254,43 +269,83 @@ export function createQrDisplayModule(userName, qrImageUrl, targetElementId = 'q
         document.head.appendChild(style);
     }
 
+    async function shareQrImage(qrImageUrl) {
+        if (typeof apimobileAjax !== 'function') {
+            alert('Chức năng chia sẻ hiện chỉ hỗ trợ trong ứng dụng di động!');
+            return;
+        }
+        let filePath = qrImageUrl.replace(/^data:image\/png;base64,/, '');
+        let filePathR = '';
+        await apimobileAjaxAsync(
+            {
+                success: function (data) {
+                    console.log('🚀 ~ success:function ~ data:', data);
+                    filePathR = data;
+                },
+            },
+            {
+                MethodName: 'MergeFileSplit',
+                prs: [filePath, 0, 1, 'ScanQrDevice.jpg', 'ScanQrDevice.jpg', ''],
+            }
+        );
+
+        const fileName = 'ScanQrDevice.jpg';
+        const tmpData = {
+            MethodName: 'MobileShareFileAsync',
+            prs: [filePathR, fileName],
+        };
+
+        const option = {
+            success: (res) => console.log('✅ Chia sẻ thành công:', res),
+            error: (err) => console.error('❌ Chia sẻ thất bại:', err),
+        };
+
+        await apimobileAjax(option, tmpData);
+    }
+
     // Function to set up event listeners
     function setupEventListeners(container) {
+        const overlay = container.closest('.qr-popup-overlay');
         const closeIcon = container.querySelector('.close-icon');
-        if (closeIcon) {
+        if (overlay && closeIcon) {
             closeIcon.addEventListener('click', () => {
-                container.style.display = 'none'; // Hide the QR display
-                // Or if you want to remove it entirely:
-                // container.remove();
-                console.log('QR display closed.');
+                overlay.remove();
             });
         }
 
         const downloadButton = container.querySelector('.action-item:nth-child(1)');
         if (downloadButton) {
-            downloadButton.addEventListener('click', () => {
-                alert('Chức năng Tải xuống đang được phát triển!');
-                console.log('Download button clicked.');
-                // You can add more sophisticated download logic here, e.g., fetching the QR image and prompting download
+            downloadButton.addEventListener('click', async () => {
+                try {
+                    let imageDataUrl = qrImageUrl.replace(/,"QRCode\.png"/, '');
+
+                    const link = document.createElement('a');
+                    link.href = imageDataUrl;
+                    link.download = 'QRCode.png';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+
+                    console.log('✅ Đã tải xuống mã QR.');
+                } catch (error) {
+                    console.error('❌ Lỗi khi tải QR:', error);
+                    alert('Không thể tải ảnh QR. Vui lòng thử lại.');
+                }
             });
         }
 
         const shareButton = container.querySelector('.action-item:nth-child(2)');
         if (shareButton) {
             shareButton.addEventListener('click', () => {
-                if (navigator.share) {
-                    navigator.share({
-                        title: 'Mã QR Vào Ca',
-                        text: 'Quét mã QR này để đồng bộ hồ sơ nhân viên trên ứng dụng Vào Ca!',
-                        url: qrImageUrl, // Use the QR image URL or a specific page URL
-                    }).then(() => {
-                        console.log('Successfully shared');
-                    }).catch((error) => {
-                        console.error('Error sharing:', error);
-                    });
-                } else {
-                    alert('Chức năng Chia sẻ không được hỗ trợ trên trình duyệt này!');
-                    console.log('Share button clicked. Web Share API not supported.');
+                shareQrImage(qrImageUrl);
+            });
+        }
+
+        if (overlay) {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.remove();
+                    console.log('QR display closed via overlay click.');
                 }
             });
         }

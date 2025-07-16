@@ -162,7 +162,7 @@ class UIElements_VaoCa {
 
             #vc-vu-alert-container {
                 position: fixed;
-                bottom: 70px;
+                bottom: 80px;
                 right: 10px;
                 display: flex;
                 flex-direction: column;
