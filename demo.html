@@ -176,18 +176,44 @@
         </div>
     </div>
 
-    <script src="./VCUIElements.js"></script>
-    <script>
-        // UI Manager đã được khởi tạo tự động và available ở window.uiManager
-        console.log('UI Manager initialized:', window.uiManager);
+    <script type="module">
+        import { UIElements_VaoCa } from './VCUIElements.js';
 
-        // Test alert
-        setTimeout(() => {
-            window.uiManager.showAlert({
-                type: 'success',
-                message: 'Demo đã sẵn sàng! Click vào ảnh để test tính năng fullscreen.'
+        // Khởi tạo module
+        const uiElements = new UIElements_VaoCa();
+
+        // Thêm sự kiện click vào ảnh để test tính năng
+        document.querySelectorAll('.demo-image').forEach(image => {
+            image.addEventListener('click', () => {
+                const imageSrc = image.src;
+                uiElements.showFullscreenImage(imageSrc);
             });
-        }, 1000);
+        });
+
+        // Thêm nút kiểm tra tính năng
+        const testButtonsContainer = document.createElement('div');
+        testButtonsContainer.style.marginTop = '20px';
+        testButtonsContainer.innerHTML = `
+                <button id="testSaveImage" style="margin-right: 10px;">Test Lưu Ảnh</button>
+                <button id="testCopyImage" style="margin-right: 10px;">Test Sao Chép Ảnh</button>
+                <button id="testShareImage">Test Chia Sẻ Ảnh</button>
+            `;
+        document.body.appendChild(testButtonsContainer);
+
+        document.getElementById('testSaveImage').addEventListener('click', () => {
+            const imageSrc = document.querySelector('.demo-image').src;
+            uiElements._saveImage(imageSrc);
+        });
+
+        document.getElementById('testCopyImage').addEventListener('click', () => {
+            const imageSrc = document.querySelector('.demo-image').src;
+            uiElements._copyImage(imageSrc);
+        });
+
+        document.getElementById('testShareImage').addEventListener('click', () => {
+            const imageSrc = document.querySelector('.demo-image').src;
+            uiElements._shareImage(imageSrc);
+        });
     </script>
 </body>
 
