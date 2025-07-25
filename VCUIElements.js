@@ -117,7 +117,7 @@ class UIElements_VaoCa {
             }
 
             .VC-Vu-popup-buttons button {
-                padding: 0.4rem 2rem;
+                padding: 0.6rem 2rem;
                 border: none;
                 border-radius: 32px;
                 cursor: pointer;
@@ -133,7 +133,7 @@ class UIElements_VaoCa {
             }
 
             .VC-Vu-btn-ok {
-                background-color: #1d9336;
+                background-color: #004c39;
                 color: white;
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
             }
