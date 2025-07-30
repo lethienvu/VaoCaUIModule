@@ -326,7 +326,7 @@ class UIElements_VaoCa {
                   left: 0;
                   width: 100%;
                   height: 100%;
-                  background-color: rgba(0, 0, 0, 0.95);
+                  background-color: rgba(0, 0, 0, 0.9);
                   display: none;
                   justify-content: center;
                   align-items: center;
@@ -348,7 +348,7 @@ class UIElements_VaoCa {
                 /* Mobile specific optimizations */
                 @media (max-width: 768px) {
                   #fullscreenImageOverlay {
-                    background-color: rgba(0, 0, 0, 0.98);
+                    background-color: rgba(0, 0, 0, 0.9);
                     backdrop-filter: none;
                     -webkit-backdrop-filter: none;
                     height: 100vh;
@@ -441,12 +441,12 @@ class UIElements_VaoCa {
                   position: absolute;
                   top: 20px;
                   right: 20px;
-                  background-color: rgba(255, 255, 255, 0.3);
+                  background-color: rgba(0, 0, 0, 0.6);
                   color: white;
                   border: none;
                   border-radius: 60px;
-                  width: 50px;
-                  height: 50px;
+                  width: 40px;
+                  height: 40px;
                   cursor: pointer;
                   display: flex;
                   justify-content: center;
@@ -456,8 +456,8 @@ class UIElements_VaoCa {
                 }
 
                 #closeImageOverlay svg {
-                  width: 40px;
-                  height: 40px;
+                  width: 30px;
+                  height: 30px;
                 }
 
                 #closeImageOverlay:hover {
@@ -483,20 +483,19 @@ class UIElements_VaoCa {
                   gap: 16px;
                   /* Space between buttons */
                   z-index: 2001;
-                  border: 1px solid rgba(255, 255, 255, 0.4);
                   padding: 8px 12px;
                   border-radius: 30px;
+                  width: 30%;
                   height: 3.6rem;
                 }
 
                 .image-action-btn {
-                  background-color: rgba(255, 255, 255, 0.2);
                   color: white;
                   border: none;
-                  border-radius: 50%;
-                  /* Circular buttons */
-                  width: 36px;
-                  height: 36px;
+                  border-radius: 9999px;
+                  width: 100%;
+                  font-size: 1rem;
+                 background-color: rgba(0, 0, 0, 0.6);
                   cursor: pointer;
                   display: flex;
                   justify-content: center;
@@ -545,7 +544,6 @@ class UIElements_VaoCa {
                   right: 20px;
                   display: flex;
                   width: 40%;
-                  border: 1px solid rgba(255, 255, 255, 0.4);
                   padding: 8px 10px;
                   /* Use flexbox for alignment */
                   align-items: center;
@@ -556,14 +554,12 @@ class UIElements_VaoCa {
                   height: 3.6rem;
                   /* Space between logos and divider */
                   z-index: 2001;
-                  background-color: rgba(255, 255, 255, 0.1);
-                   backdrop-filter: blur(8px) brightness(1.2);
-                --webkit-backdrop-filter: blur(8px);
+                  background-color: transparent;
                 }
 
                 /* NEW: Styles for individual Logos */
                 .fullscreen-logo {
-                  transform: scale(0.8);
+                  transform: scale(0.7);
                 }
 
                 /* NEW: Styles for the Divider */
@@ -572,7 +568,7 @@ class UIElements_VaoCa {
                   /* Độ rộng của đường ngăn */
                   height: 40px;
                   /* Chiều cao của đường ngăn, có thể điều chỉnh */
-                  background-color: rgba(255, 255, 255, 0.5);
+                  background-color: rgba(255, 255, 255, 0.9);
                 }
         `;
     document.head.appendChild(style);
@@ -653,23 +649,13 @@ class UIElements_VaoCa {
     </svg>
   </button>
   <div id="imageActionButtons">
-    <button id="saveImageBtn" class="image-action-btn" title="Lưu ảnh">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
-      </svg>
-    </button>
-    <button id="copyImageBtn" class="image-action-btn" title="Sao chép ảnh">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-        <path
-          d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
-      </svg>
-    </button>
     <button id="shareImageBtn" class="image-action-btn" title="Chia sẻ ảnh">
-      <svg height="18" width="18" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1024 1024" class="icon">
-        <path fill="#ffffff"
-          d="M767.99994 585.142857q75.995429 0 129.462857 53.394286t53.394286 129.462857-53.394286 129.462857-129.462857 53.394286-129.462857-53.394286-53.394286-129.462857q0-6.875429 1.170286-19.456l-205.677714-102.838857q-52.589714 49.152-124.562286 49.152-75.995429 0-129.462857-53.394286t-53.394286-129.462857 53.394286-129.462857 129.462857-53.394286q71.972571 0 124.562286 49.152l205.677714-102.838857q-1.170286-12.580571-1.170286-19.456 0-75.995429 53.394286-129.462857t129.462857-53.394286 129.462857 53.394286 53.394286 129.462857-53.394286 129.462857-129.462857 53.394286q-71.972571 0-124.562286-49.152l-205.677714 102.838857q1.170286 12.580571 1.170286 19.456t-1.170286 19.456l205.677714 102.838857q52.589714-49.152 124.562286-49.152z">
-        </path>
+      <svg style="margin-right: 10px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" class="icon">
+        <path
+          d="M307 34.8c-11.5 5.1-19 16.6-19 29.2v64H176C78.8 128 0 206.8 0 304C0 417.3 81.5 467.9 100.2 478.1c2.5 1.4 5.3 1.9 8.1 1.9c10.9 0 19.7-8.9 19.7-19.7c0-7.5-4.3-14.4-9.8-19.5C108.8 431.9 96 414.4 96 384c0-53 43-96 96-96h96v64c0 12.6 7.4 24.1 19 29.2s25 3 34.4-5.4l160-144c6.7-6.1 10.6-14.7 10.6-23.8s-3.8-17.7-10.6-23.8l-160-144c-9.4-8.5-22.9-10.6-34.4-5.4z"
+        ></path>
       </svg>
+      Share
     </button>
   </div>
  <div id="fullscreenLogoContainer">
@@ -757,10 +743,6 @@ class UIElements_VaoCa {
       this.fullscreenImageOverlay.querySelector("#fullscreenImage");
     this.closeImageOverlayButton =
       this.fullscreenImageOverlay.querySelector("#closeImageOverlay");
-    this.saveImageButton =
-      this.fullscreenImageOverlay.querySelector("#saveImageBtn");
-    this.copyImageButton =
-      this.fullscreenImageOverlay.querySelector("#copyImageBtn");
     this.shareImageButton =
       this.fullscreenImageOverlay.querySelector("#shareImageBtn");
 
@@ -876,14 +858,6 @@ class UIElements_VaoCa {
       console.error("closeImageOverlayButton not found");
       return;
     }
-    if (!this.saveImageButton) {
-      console.error("saveImageButton not found");
-      return;
-    }
-    if (!this.copyImageButton) {
-      console.error("copyImageButton not found");
-      return;
-    }
     if (!this.shareImageButton) {
       console.error("shareImageButton not found");
       return;
@@ -894,16 +868,7 @@ class UIElements_VaoCa {
       this.hideFullscreenImage();
     });
 
-    this.saveImageButton.addEventListener("click", () => {
-      console.log("Save button clicked, image src:", this.fullscreenImage.src);
-      this._saveImage(this.fullscreenImage.src);
-    });
-    this.copyImageButton.addEventListener("click", () => {
-      console.log("Copy button clicked, image src:", this.fullscreenImage.src);
-      this._copyImage(this.fullscreenImage.src);
-    });
     this.shareImageButton.addEventListener("click", () => {
-      console.log("Share button clicked, image src:", this.fullscreenImage.src);
       this._shareImage(this.fullscreenImage.src);
     });
 
@@ -968,209 +933,6 @@ class UIElements_VaoCa {
   }
 
   // Trong class UIElements_VaoCa
-  _saveImage(imageSrc) {
-    console.log("_saveImage called with:", imageSrc);
-
-    if (!imageSrc || imageSrc.startsWith("https://st5.depositphotos.com")) {
-      console.log("Invalid image source, showing warning");
-      this.showAlert({
-        type: "warning",
-        message: "Không thể lưu ảnh dự phòng.",
-      });
-      return;
-    }
-
-    try {
-      console.log("Attempting to save image...");
-      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-      console.log("Is mobile device:", isMobile);
-
-      // Check if it's a data URL (base64)
-      if (imageSrc.startsWith("data:")) {
-        console.log("Saving data URL directly");
-        this._downloadDataURL(imageSrc, `image_${Date.now()}.png`);
-      } else {
-        // For external images, try different approaches
-        if (isMobile) {
-          // On mobile, just open in new tab
-          console.log("Mobile: Opening image in new tab");
-          window.open(imageSrc, "_blank");
-        } else {
-          // On desktop, try to download or open in new tab
-          console.log("Desktop: Attempting download");
-          try {
-            this._downloadDataURL(imageSrc, `image_${Date.now()}.png`);
-          } catch (e) {
-            console.log("Download failed, opening in new tab");
-            window.open(imageSrc, "_blank");
-          }
-        }
-      }
-
-      console.log("Save operation completed");
-      this.showAlert({
-        type: "success",
-        message: isMobile
-          ? "Ảnh đã được mở trong tab mới!"
-          : "Ảnh đã được lưu!",
-      });
-    } catch (error) {
-      console.error("Lỗi khi lưu ảnh:", error);
-      this.showAlert({ type: "error", message: "Không thể lưu ảnh." });
-    }
-  }
-
-  _downloadDataURL(dataURL, filename) {
-    const link = document.createElement("a");
-    link.href = dataURL;
-    link.download = filename;
-    link.style.display = "none";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
-
-  // Trong class UIElements_VaoCa
-  _copyImage(imageSrc) {
-    console.log("_copyImage called with:", imageSrc);
-
-    // Check if clipboard API is available
-    if (!navigator.clipboard || !navigator.clipboard.write) {
-      console.log("Clipboard API not supported");
-      this.showAlert({
-        type: "warning",
-        message: "Trình duyệt không hỗ trợ sao chép ảnh.",
-      });
-      return;
-    }
-
-    // Check if we're on HTTPS or localhost
-    if (location.protocol !== "https:" && location.hostname !== "localhost") {
-      console.log("Clipboard API requires HTTPS");
-      this.showAlert({
-        type: "warning",
-        message: "Sao chép ảnh chỉ hoạt động trên HTTPS.",
-      });
-      return;
-    }
-
-    console.log("Clipboard API supported, proceeding with copy...");
-
-    // For data URLs, we can copy directly
-    if (imageSrc.startsWith("data:")) {
-      this._copyDataURL(imageSrc);
-    } else {
-      // For external images, try with CORS mode first
-      this._copyExternalImage(imageSrc);
-    }
-  }
-
-  async _copyDataURL(dataURL) {
-    try {
-      console.log("Copying data URL...");
-      const response = await fetch(dataURL);
-      const blob = await response.blob();
-      console.log("Blob created, type:", blob.type);
-
-      const item = new ClipboardItem({ [blob.type]: blob });
-      await navigator.clipboard.write([item]);
-
-      console.log("Copy successful");
-      this.showAlert({
-        type: "success",
-        message: "Ảnh đã được sao chép!",
-      });
-    } catch (error) {
-      console.error("Error copying data URL:", error);
-      this.showAlert({
-        type: "error",
-        message: "Không thể sao chép ảnh.",
-      });
-    }
-  }
-
-  async _copyExternalImage(imageSrc) {
-    try {
-      console.log("Copying external image with CORS...");
-
-      // First try with CORS mode
-      const response = await fetch(imageSrc, { mode: "cors" });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const blob = await response.blob();
-      console.log("External blob created, type:", blob.type);
-
-      const item = new ClipboardItem({ [blob.type]: blob });
-      await navigator.clipboard.write([item]);
-
-      console.log("External image copy successful");
-      this.showAlert({
-        type: "success",
-        message: "Ảnh đã được sao chép!",
-      });
-    } catch (error) {
-      console.error("Error copying external image:", error);
-
-      // Fallback: try to convert via canvas if possible
-      this._copyImageViaCanvas(imageSrc);
-    }
-  }
-
-  async _copyImageViaCanvas(imageSrc) {
-    try {
-      console.log("Trying canvas fallback for copy...");
-
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-
-      return new Promise((resolve, reject) => {
-        img.onload = async () => {
-          try {
-            const canvas = document.createElement("canvas");
-            canvas.width = img.width;
-            canvas.height = img.height;
-
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0);
-
-            canvas.toBlob(async (blob) => {
-              if (blob) {
-                const item = new ClipboardItem({ [blob.type]: blob });
-                await navigator.clipboard.write([item]);
-
-                console.log("Canvas fallback copy successful");
-                this.showAlert({
-                  type: "success",
-                  message: "Ảnh đã được sao chép!",
-                });
-                resolve();
-              } else {
-                reject(new Error("Canvas toBlob failed"));
-              }
-            }, "image/png");
-          } catch (error) {
-            reject(error);
-          }
-        };
-
-        img.onerror = () => {
-          reject(new Error("Image load failed"));
-        };
-
-        img.src = imageSrc;
-      });
-    } catch (error) {
-      console.error("Canvas fallback also failed:", error);
-      this.showAlert({
-        type: "error",
-        message: "Không thể sao chép ảnh. Vui lòng thử lại với ảnh khác.",
-      });
-    }
-  }
-
   // Trong class UIElements_VaoCa
   _shareImage(imageSrc) {
     // 1. Kiểm tra ảnh dự phòng
@@ -1210,7 +972,7 @@ class UIElements_VaoCa {
             .catch((error) => {
               // Xử lý lỗi hoặc khi người dùng hủy chia sẻ
               if (error.name === "AbortError") {
-                console.log("Chia sẻ bị hủy."); // Người dùng đóng giao diện chia sẻ
+                // Người dùng đóng giao diện chia sẻ
               } else {
                 console.error("Lỗi khi chia sẻ ảnh:", error);
                 this.showAlert({
@@ -1301,7 +1063,6 @@ class UIElements_VaoCa {
 
     // Show loading state
     this.fullscreenImage.style.opacity = "0.3";
-    console.log("Loading fullscreen image:", imageSrc);
 
     // Tạo ảnh tạm để kiểm tra kích thước và tối ưu chất lượng
     const tempImage = new Image();
@@ -1317,10 +1078,6 @@ class UIElements_VaoCa {
     }
 
     tempImage.onload = () => {
-      console.log(
-        `Image loaded successfully. Dimensions: ${tempImage.width}x${tempImage.height}`
-      );
-
       // Cải thiện xử lý ảnh dựa trên kích thước và chất lượng
       const imageArea = tempImage.width * tempImage.height;
       const isLowQuality = imageArea < 100000; // Ảnh dưới 100k pixels
@@ -1335,17 +1092,14 @@ class UIElements_VaoCa {
         this.fullscreenImage.classList.add("low-quality");
         this.fullscreenImage.style.imageRendering = "pixelated";
         this.fullscreenImage.style.objectFit = "contain";
-        console.log("Applied pixelated rendering for low quality image");
       } else if (isHighRes) {
         // Ảnh chất lượng cao: sử dụng crisp-edges
         this.fullscreenImage.classList.add("high-quality");
         this.fullscreenImage.style.imageRendering = "crisp-edges";
-        console.log("Applied crisp-edges rendering for high resolution image");
       } else {
         // Ảnh chất lượng bình thường: sử dụng high-quality
         this.fullscreenImage.classList.add("normal-quality");
         this.fullscreenImage.style.imageRendering = "high-quality";
-        console.log("Applied high-quality rendering for normal image");
       }
 
       // Set the image source and restore opacity
@@ -1368,9 +1122,6 @@ class UIElements_VaoCa {
     };
 
     tempImage.onerror = (error) => {
-      console.error("Error loading image for quality check:", error);
-      console.log("Attempting to display image with fallback settings...");
-
       // Reset CSS classes and apply fallback settings
       this.fullscreenImage.className = "";
       this.fullscreenImage.classList.add("normal-quality");
@@ -1383,7 +1134,6 @@ class UIElements_VaoCa {
 
       // Set up error handling for the main image
       this.fullscreenImage.onerror = () => {
-        console.error("Failed to load image in fullscreen view");
         this.showAlert({
           type: "error",
           message: "Không thể tải ảnh. Vui lòng thử lại hoặc chọn ảnh khác.",
@@ -1391,9 +1141,7 @@ class UIElements_VaoCa {
         this.hideFullscreenImage();
       };
 
-      this.fullscreenImage.onload = () => {
-        console.log("Image loaded successfully in fallback mode");
-      };
+      this.fullscreenImage.onload = () => {};
     };
 
     // Start loading
