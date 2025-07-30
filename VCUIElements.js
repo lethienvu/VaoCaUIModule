@@ -326,13 +326,13 @@ class UIElements_VaoCa {
                   left: 0;
                   width: 100%;
                   height: 100%;
-                  background-color: rgba(0, 0, 0, 0.9);
+                  background-color: rgba(0, 0, 0, 1);
                   display: none;
                   justify-content: center;
                   align-items: center;
                   z-index: 2000;
                   animation: fadeIn 0.3s ease-out;
-                  backdrop-filter: blur(2px) brightness(1.2);
+                  backdrop-filter: blur(2px);
                   -webkit-backdrop-filter: blur(2px);
                   -webkit-overflow-scrolling: touch;
                   overscroll-behavior: contain;
@@ -348,7 +348,7 @@ class UIElements_VaoCa {
                 /* Mobile specific optimizations */
                 @media (max-width: 768px) {
                   #fullscreenImageOverlay {
-                    background-color: rgba(0, 0, 0, 0.9);
+                    background-color: rgba(0, 0, 0, 1);
                     backdrop-filter: none;
                     -webkit-backdrop-filter: none;
                     height: 100vh;
@@ -486,14 +486,14 @@ class UIElements_VaoCa {
                   padding: 8px 12px;
                   border-radius: 30px;
                   width: 40%;
-                  height: 3.4rem;
+                  height: 3.2rem;
                 }
 
                 .image-action-btn {
                   color: white;
                   border-radius: 9999px;
                   width: 100%;
-                  height: 3.4rem;
+                  height: 3.2rem;
                   font-size: 1rem;
                  background-color: rgba(0, 0, 0, 0.6);
                  backdrop-filter: blur(6px);
@@ -511,9 +511,9 @@ class UIElements_VaoCa {
                 }
 
                 .image-action-btn svg {
-                  width: 18px;
+                  width: 16px;
                   /* Icon size */
-                  height: 18px;
+                  height: 16px;
                   fill: white;
                 }
 
@@ -554,7 +554,7 @@ class UIElements_VaoCa {
                   border-radius: 40px;
                   /* Vertically align items */
                   gap: 8px;
-                  height: 3.6rem;
+                  height: 3.2rem;
                   /* Space between logos and divider */
                   z-index: 2001;
                   background-color: transparent;
@@ -570,7 +570,7 @@ class UIElements_VaoCa {
                 .fullscreen-logo-divider {
                   width: 1px;
                   /* Độ rộng của đường ngăn */
-                  height: 40px;
+                  height: 3rem;
                   /* Chiều cao của đường ngăn, có thể điều chỉnh */
                   background-color: rgba(255, 255, 255, 0.9);
                 }
