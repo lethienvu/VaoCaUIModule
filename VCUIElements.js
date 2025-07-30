@@ -441,7 +441,7 @@ class UIElements_VaoCa {
                   position: absolute;
                   top: 20px;
                   right: 20px;
-                  background-color: rgba(0, 0, 0, 0.3);
+                  background-color: rgba(0, 0, 0, 0.4);
                   color: white;
                   border: none;
                   border-radius: 60px;
@@ -453,6 +453,7 @@ class UIElements_VaoCa {
                   align-items: center;
                   z-index: 2001;
                   transition: background-color 0.2s;
+                  border: 1px solid rgba(255, 255, 255, 0.1);
                 }
 
                 #closeImageOverlay svg {
@@ -478,8 +479,9 @@ class UIElements_VaoCa {
                 #imageActionButtons {
                   position: absolute;
                   bottom: 20px;
-                  left: 20px;
+                  left: 10px;
                   display: flex;
+                  align-items: center;
                   gap: 16px;
                   /* Space between buttons */
                   z-index: 2001;
@@ -495,7 +497,7 @@ class UIElements_VaoCa {
                   width: 100%;
                   height: 3.2rem;
                   font-size: 1rem;
-                 background-color: rgba(0, 0, 0, 0.6);
+                 background-color: rgba(0, 0, 0, 0.4);
                  backdrop-filter: blur(6px);
                   -webkit-backdrop-filter: blur(6px);
                   cursor: pointer;
@@ -524,7 +526,7 @@ class UIElements_VaoCa {
                   width: 80px;
                   /* Adjust as needed */
                   height: auto;
-                  opacity: 0.7;
+                  opacity: 0.9;
                   /* Make it slightly transparent */
                   z-index: 2001;
 
@@ -570,7 +572,7 @@ class UIElements_VaoCa {
                 .fullscreen-logo-divider {
                   width: 1px;
                   /* Độ rộng của đường ngăn */
-                  height: 3rem;
+                  height: 2.9rem;
                   /* Chiều cao của đường ngăn, có thể điều chỉnh */
                   background-color: rgba(255, 255, 255, 0.9);
                 }
