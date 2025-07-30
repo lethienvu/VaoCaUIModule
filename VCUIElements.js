@@ -441,7 +441,7 @@ class UIElements_VaoCa {
                   position: absolute;
                   top: 20px;
                   right: 20px;
-                  background-color: rgba(0, 0, 0, 0.6);
+                  background-color: rgba(0, 0, 0, 0.3);
                   color: white;
                   border: none;
                   border-radius: 60px;
@@ -486,13 +486,14 @@ class UIElements_VaoCa {
                   padding: 8px 12px;
                   border-radius: 30px;
                   width: 40%;
-                  height: 3.6rem;
+                  height: 3.4rem;
                 }
 
                 .image-action-btn {
                   color: white;
                   border-radius: 9999px;
                   width: 100%;
+                  height: 3.4rem;
                   font-size: 1rem;
                  background-color: rgba(0, 0, 0, 0.6);
                  backdrop-filter: blur(6px);
@@ -502,7 +503,7 @@ class UIElements_VaoCa {
                   justify-content: center;
                   align-items: center;
                   transition: background-color 0.2s;
-                  border: 1px solid rgba(255, 255, 255, 0.3);
+                  border: 1px solid rgba(255, 255, 255, 0.1);
                 }
 
                 .image-action-btn:hover {
@@ -545,7 +546,7 @@ class UIElements_VaoCa {
                   bottom: 20px;
                   right: 20px;
                   display: flex;
-                  width: 40%;
+                  width: 45%;
                   padding: 8px 10px;
                   /* Use flexbox for alignment */
                   align-items: center;
@@ -557,7 +558,7 @@ class UIElements_VaoCa {
                   /* Space between logos and divider */
                   z-index: 2001;
                   background-color: transparent;
-                  border: 1px solid rgba(255, 255, 255, 0.3);
+                  border: 1px solid rgba(255, 255, 255, 0.1);
                 }
 
                 /* NEW: Styles for individual Logos */
