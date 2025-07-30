@@ -456,8 +456,8 @@ class UIElements_VaoCa {
                 }
 
                 #closeImageOverlay svg {
-                  width: 30px;
-                  height: 30px;
+                  width: 26px;
+                  height: 26px;
                 }
 
                 #closeImageOverlay:hover {
@@ -485,7 +485,7 @@ class UIElements_VaoCa {
                   z-index: 2001;
                   padding: 8px 12px;
                   border-radius: 30px;
-                  width: 30%;
+                  width: 40%;
                   height: 3.6rem;
                 }
 
@@ -508,9 +508,9 @@ class UIElements_VaoCa {
                 }
 
                 .image-action-btn svg {
-                  width: 20px;
+                  width: 18px;
                   /* Icon size */
-                  height: 20px;
+                  height: 18px;
                   fill: white;
                 }
 
@@ -559,7 +559,7 @@ class UIElements_VaoCa {
 
                 /* NEW: Styles for individual Logos */
                 .fullscreen-logo {
-                  transform: scale(0.7);
+                  transform: scale(0.85);
                 }
 
                 /* NEW: Styles for the Divider */
