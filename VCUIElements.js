@@ -374,18 +374,36 @@ class UIElements_VaoCa {
                   object-fit: contain;
                   cursor: pointer;
                   border-radius: 16px;
-                  image-rendering: -webkit-optimize-contrast;
-                  image-rendering: crisp-edges;
-                  image-rendering: pixelated;
+                  /* Default image rendering - will be overridden by JavaScript based on image quality */
+                  image-rendering: auto;
                   -webkit-touch-callout: none;
                   -webkit-user-select: none;
                   -khtml-user-select: none;
                   -moz-user-select: none;
                   -ms-user-select: none;
                   user-select: none;
-                  transition: transform 0.3s ease;
+                  transition: transform 0.3s ease, opacity 0.3s ease;
                   transform-origin: center center;
                   will-change: transform;
+                }
+
+                /* Classes for different image quality types */
+                #fullscreenImage.low-quality {
+                  image-rendering: -webkit-optimize-contrast;
+                  image-rendering: pixelated;
+                  image-rendering: crisp-edges;
+                }
+
+                #fullscreenImage.high-quality {
+                  image-rendering: -webkit-optimize-contrast;
+                  image-rendering: high-quality;
+                  image-rendering: crisp-edges;
+                }
+
+                #fullscreenImage.normal-quality {
+                  image-rendering: -webkit-optimize-contrast;
+                  image-rendering: high-quality;
+                  image-rendering: auto;
                 }
 
                 /* Responsive optimizations for mobile */
@@ -396,9 +414,6 @@ class UIElements_VaoCa {
                     width: auto;
                     height: auto;
                     object-fit: contain;
-                    image-rendering: -webkit-optimize-contrast;
-                    image-rendering: high-quality;
-                    -webkit-optimize-contrast: auto;
                     backface-visibility: hidden;
                     -webkit-backface-visibility: hidden;
                     perspective: 1000px;
@@ -408,11 +423,17 @@ class UIElements_VaoCa {
 
                 /* High DPI display optimization */
                 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
-                  #fullscreenImage {
-                    image-rendering: -webkit-optimize-contrast;
-                    image-rendering: crisp-edges;
+                  #fullscreenImage.high-quality,
+                  #fullscreenImage.normal-quality {
                     -webkit-font-smoothing: antialiased;
                     -moz-osx-font-smoothing: grayscale;
+                  }
+                  
+                  #fullscreenImage.low-quality {
+                    /* Keep pixelated rendering for low quality images on high DPI */
+                    image-rendering: pixelated;
+                    image-rendering: -moz-crisp-edges;
+                    image-rendering: crisp-edges;
                   }
                 }
 
@@ -850,18 +871,39 @@ class UIElements_VaoCa {
   }
 
   _setupFullscreenImageOverlayEvents() {
+    // Kiểm tra các phần tử có tồn tại không
+    if (!this.closeImageOverlayButton) {
+      console.error("closeImageOverlayButton not found");
+      return;
+    }
+    if (!this.saveImageButton) {
+      console.error("saveImageButton not found");
+      return;
+    }
+    if (!this.copyImageButton) {
+      console.error("copyImageButton not found");
+      return;
+    }
+    if (!this.shareImageButton) {
+      console.error("shareImageButton not found");
+      return;
+    }
+
     // Đóng khi click nút "Đóng"
     this.closeImageOverlayButton.addEventListener("click", () => {
       this.hideFullscreenImage();
     });
 
     this.saveImageButton.addEventListener("click", () => {
+      console.log("Save button clicked, image src:", this.fullscreenImage.src);
       this._saveImage(this.fullscreenImage.src);
     });
     this.copyImageButton.addEventListener("click", () => {
+      console.log("Copy button clicked, image src:", this.fullscreenImage.src);
       this._copyImage(this.fullscreenImage.src);
     });
     this.shareImageButton.addEventListener("click", () => {
+      console.log("Share button clicked, image src:", this.fullscreenImage.src);
       this._shareImage(this.fullscreenImage.src);
     });
 
@@ -927,7 +969,10 @@ class UIElements_VaoCa {
 
   // Trong class UIElements_VaoCa
   _saveImage(imageSrc) {
+    console.log("_saveImage called with:", imageSrc);
+
     if (!imageSrc || imageSrc.startsWith("https://st5.depositphotos.com")) {
+      console.log("Invalid image source, showing warning");
       this.showAlert({
         type: "warning",
         message: "Không thể lưu ảnh dự phòng.",
@@ -936,76 +981,192 @@ class UIElements_VaoCa {
     }
 
     try {
+      console.log("Attempting to save image...");
       const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      console.log("Is mobile device:", isMobile);
 
-      if (isMobile) {
-        // Sử dụng phương pháp khác cho thiết bị di động
-        const link = document.createElement("a");
-        link.href = imageSrc;
-        link.target = "_blank"; // Mở trong tab mới để đảm bảo hoạt động trên di động
-        link.rel = "noopener noreferrer";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+      // Check if it's a data URL (base64)
+      if (imageSrc.startsWith("data:")) {
+        console.log("Saving data URL directly");
+        this._downloadDataURL(imageSrc, `image_${Date.now()}.png`);
       } else {
-        // Phương pháp thông thường cho desktop
-        const link = document.createElement("a");
-        link.href = imageSrc;
-        link.download = `image_${Date.now()}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        // For external images, try different approaches
+        if (isMobile) {
+          // On mobile, just open in new tab
+          console.log("Mobile: Opening image in new tab");
+          window.open(imageSrc, "_blank");
+        } else {
+          // On desktop, try to download or open in new tab
+          console.log("Desktop: Attempting download");
+          try {
+            this._downloadDataURL(imageSrc, `image_${Date.now()}.png`);
+          } catch (e) {
+            console.log("Download failed, opening in new tab");
+            window.open(imageSrc, "_blank");
+          }
+        }
       }
 
-      this.showAlert({ type: "success", message: "Ảnh đã được lưu!" });
+      console.log("Save operation completed");
+      this.showAlert({
+        type: "success",
+        message: isMobile
+          ? "Ảnh đã được mở trong tab mới!"
+          : "Ảnh đã được lưu!",
+      });
     } catch (error) {
       console.error("Lỗi khi lưu ảnh:", error);
       this.showAlert({ type: "error", message: "Không thể lưu ảnh." });
     }
   }
 
+  _downloadDataURL(dataURL, filename) {
+    const link = document.createElement("a");
+    link.href = dataURL;
+    link.download = filename;
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   // Trong class UIElements_VaoCa
   _copyImage(imageSrc) {
-    // 2. Kiểm tra xem trình duyệt có hỗ trợ Web Clipboard API không
-    if (navigator.clipboard && navigator.clipboard.write) {
-      // 3. Chuyển đổi Data URL (Base64) thành Blob
-      // Dùng fetch API để lấy dữ liệu ảnh từ Data URL và chuyển đổi nó thành Blob.
-      fetch(imageSrc)
-        .then((res) => res.blob()) // Lấy phản hồi dưới dạng Blob
-        .then((blob) => {
-          // 4. Tạo một ClipboardItem từ Blob
-          // ClipboardItem là một phần của Clipboard API, cho phép sao chép các loại dữ liệu phức tạp.
-          // Chúng ta chỉ định loại MIME của Blob là key và Blob là value.
-          const item = new ClipboardItem({ [blob.type]: blob });
+    console.log("_copyImage called with:", imageSrc);
 
-          // 5. Ghi ClipboardItem vào clipboard
-          navigator.clipboard
-            .write([item])
-            .then(() => {
-              this.showAlert({
-                type: "success",
-                message: "Ảnh đã được sao chép!",
-              });
-            })
-            .catch((err) => {
-              // Xử lý lỗi nếu việc ghi vào clipboard thất bại
-              console.error("Lỗi khi sao chép ảnh:", err);
-              this.showAlert({
-                type: "error",
-                message: "Không thể sao chép ảnh.",
-              });
-            });
-        })
-        .catch((err) => {
-          // Xử lý lỗi nếu việc chuyển đổi ảnh sang Blob thất bại
-          console.error("Lỗi khi chuyển đổi ảnh để sao chép:", err);
-          this.showAlert({ type: "error", message: "Không thể sao chép ảnh." });
-        });
-    } else {
-      // 6. Thông báo nếu trình duyệt không hỗ trợ API
+    // Check if clipboard API is available
+    if (!navigator.clipboard || !navigator.clipboard.write) {
+      console.log("Clipboard API not supported");
       this.showAlert({
         type: "warning",
         message: "Trình duyệt không hỗ trợ sao chép ảnh.",
+      });
+      return;
+    }
+
+    // Check if we're on HTTPS or localhost
+    if (location.protocol !== "https:" && location.hostname !== "localhost") {
+      console.log("Clipboard API requires HTTPS");
+      this.showAlert({
+        type: "warning",
+        message: "Sao chép ảnh chỉ hoạt động trên HTTPS.",
+      });
+      return;
+    }
+
+    console.log("Clipboard API supported, proceeding with copy...");
+
+    // For data URLs, we can copy directly
+    if (imageSrc.startsWith("data:")) {
+      this._copyDataURL(imageSrc);
+    } else {
+      // For external images, try with CORS mode first
+      this._copyExternalImage(imageSrc);
+    }
+  }
+
+  async _copyDataURL(dataURL) {
+    try {
+      console.log("Copying data URL...");
+      const response = await fetch(dataURL);
+      const blob = await response.blob();
+      console.log("Blob created, type:", blob.type);
+
+      const item = new ClipboardItem({ [blob.type]: blob });
+      await navigator.clipboard.write([item]);
+
+      console.log("Copy successful");
+      this.showAlert({
+        type: "success",
+        message: "Ảnh đã được sao chép!",
+      });
+    } catch (error) {
+      console.error("Error copying data URL:", error);
+      this.showAlert({
+        type: "error",
+        message: "Không thể sao chép ảnh.",
+      });
+    }
+  }
+
+  async _copyExternalImage(imageSrc) {
+    try {
+      console.log("Copying external image with CORS...");
+
+      // First try with CORS mode
+      const response = await fetch(imageSrc, { mode: "cors" });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      console.log("External blob created, type:", blob.type);
+
+      const item = new ClipboardItem({ [blob.type]: blob });
+      await navigator.clipboard.write([item]);
+
+      console.log("External image copy successful");
+      this.showAlert({
+        type: "success",
+        message: "Ảnh đã được sao chép!",
+      });
+    } catch (error) {
+      console.error("Error copying external image:", error);
+
+      // Fallback: try to convert via canvas if possible
+      this._copyImageViaCanvas(imageSrc);
+    }
+  }
+
+  async _copyImageViaCanvas(imageSrc) {
+    try {
+      console.log("Trying canvas fallback for copy...");
+
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+
+      return new Promise((resolve, reject) => {
+        img.onload = async () => {
+          try {
+            const canvas = document.createElement("canvas");
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0);
+
+            canvas.toBlob(async (blob) => {
+              if (blob) {
+                const item = new ClipboardItem({ [blob.type]: blob });
+                await navigator.clipboard.write([item]);
+
+                console.log("Canvas fallback copy successful");
+                this.showAlert({
+                  type: "success",
+                  message: "Ảnh đã được sao chép!",
+                });
+                resolve();
+              } else {
+                reject(new Error("Canvas toBlob failed"));
+              }
+            }, "image/png");
+          } catch (error) {
+            reject(error);
+          }
+        };
+
+        img.onerror = () => {
+          reject(new Error("Image load failed"));
+        };
+
+        img.src = imageSrc;
+      });
+    } catch (error) {
+      console.error("Canvas fallback also failed:", error);
+      this.showAlert({
+        type: "error",
+        message: "Không thể sao chép ảnh. Vui lòng thử lại với ảnh khác.",
       });
     }
   }
@@ -1114,18 +1275,82 @@ class UIElements_VaoCa {
       return;
     }
 
+    // Validate image source
+    if (
+      !imageSrc ||
+      imageSrc === "" ||
+      imageSrc === "undefined" ||
+      imageSrc === "null"
+    ) {
+      console.error("Invalid image source provided:", imageSrc);
+      this.showAlert({
+        type: "error",
+        message: "Không thể hiển thị ảnh. Nguồn ảnh không hợp lệ.",
+      });
+      return;
+    }
+
     // Reset any existing transforms
     this.fullscreenImage.style.transform = "scale(1) translate(0, 0)";
 
+    // Reset image rendering để tránh xung đột
+    this.fullscreenImage.style.imageRendering = "auto";
+    this.fullscreenImage.style.objectFit = "contain";
+    this.fullscreenImage.style.maxWidth = "100%";
+    this.fullscreenImage.style.maxHeight = "100%";
+
+    // Show loading state
+    this.fullscreenImage.style.opacity = "0.3";
+    console.log("Loading fullscreen image:", imageSrc);
+
     // Tạo ảnh tạm để kiểm tra kích thước và tối ưu chất lượng
     const tempImage = new Image();
-    tempImage.crossOrigin = "anonymous";
+
+    // Set crossOrigin carefully to avoid CORS issues
+    if (
+      imageSrc.startsWith("data:") ||
+      imageSrc.startsWith(window.location.origin)
+    ) {
+      // Don't set crossOrigin for same-origin or data URLs
+    } else {
+      tempImage.crossOrigin = "anonymous";
+    }
 
     tempImage.onload = () => {
-      // Tối ưu hóa cho ảnh chất lượng cao
-      this.fullscreenImage.style.imageRendering =
-        tempImage.width > 1920 ? "crisp-edges" : "high-quality";
+      console.log(
+        `Image loaded successfully. Dimensions: ${tempImage.width}x${tempImage.height}`
+      );
+
+      // Cải thiện xử lý ảnh dựa trên kích thước và chất lượng
+      const imageArea = tempImage.width * tempImage.height;
+      const isLowQuality = imageArea < 100000; // Ảnh dưới 100k pixels
+      const isHighRes = tempImage.width > 1920 || tempImage.height > 1080;
+
+      // Reset CSS classes
+      this.fullscreenImage.className = "";
+
+      // Thiết lập CSS class và imageRendering phù hợp
+      if (isLowQuality) {
+        // Ảnh chất lượng thấp: sử dụng pixelated để tránh bị mờ
+        this.fullscreenImage.classList.add("low-quality");
+        this.fullscreenImage.style.imageRendering = "pixelated";
+        this.fullscreenImage.style.objectFit = "contain";
+        console.log("Applied pixelated rendering for low quality image");
+      } else if (isHighRes) {
+        // Ảnh chất lượng cao: sử dụng crisp-edges
+        this.fullscreenImage.classList.add("high-quality");
+        this.fullscreenImage.style.imageRendering = "crisp-edges";
+        console.log("Applied crisp-edges rendering for high resolution image");
+      } else {
+        // Ảnh chất lượng bình thường: sử dụng high-quality
+        this.fullscreenImage.classList.add("normal-quality");
+        this.fullscreenImage.style.imageRendering = "high-quality";
+        console.log("Applied high-quality rendering for normal image");
+      }
+
+      // Set the image source and restore opacity
       this.fullscreenImage.src = imageSrc;
+      this.fullscreenImage.style.opacity = "1";
 
       // Thêm meta viewport cho mobile optimization
       let viewport = document.querySelector("meta[name=viewport]");
@@ -1142,11 +1367,36 @@ class UIElements_VaoCa {
       this.fullscreenImageOverlay._originalViewport = originalViewport;
     };
 
-    tempImage.onerror = () => {
-      // Nếu có lỗi, vẫn hiển thị ảnh nhưng với cài đặt mặc định
+    tempImage.onerror = (error) => {
+      console.error("Error loading image for quality check:", error);
+      console.log("Attempting to display image with fallback settings...");
+
+      // Reset CSS classes and apply fallback settings
+      this.fullscreenImage.className = "";
+      this.fullscreenImage.classList.add("normal-quality");
+      this.fullscreenImage.style.imageRendering = "auto";
+      this.fullscreenImage.style.objectFit = "contain";
+      this.fullscreenImage.style.opacity = "1";
+
+      // Try to load the image directly
       this.fullscreenImage.src = imageSrc;
+
+      // Set up error handling for the main image
+      this.fullscreenImage.onerror = () => {
+        console.error("Failed to load image in fullscreen view");
+        this.showAlert({
+          type: "error",
+          message: "Không thể tải ảnh. Vui lòng thử lại hoặc chọn ảnh khác.",
+        });
+        this.hideFullscreenImage();
+      };
+
+      this.fullscreenImage.onload = () => {
+        console.log("Image loaded successfully in fallback mode");
+      };
     };
 
+    // Start loading
     tempImage.src = imageSrc;
 
     this.fullscreenImageOverlay.classList.add("active");
@@ -1167,6 +1417,13 @@ class UIElements_VaoCa {
     this.fullscreenImageOverlay.classList.remove("active");
     this.fullscreenImage.src = "";
     this.fullscreenImage.style.transform = "scale(1) translate(0, 0)";
+
+    // Reset image styles and classes
+    this.fullscreenImage.className = "";
+    this.fullscreenImage.style.imageRendering = "auto";
+    this.fullscreenImage.style.opacity = "1";
+    this.fullscreenImage.style.objectFit = "contain";
+
     document.body.style.overflow = "";
 
     // Khôi phục viewport gốc
@@ -1686,6 +1943,9 @@ class UIElements_VaoCa {
     }
   }
 }
+
+// Export the class for creating new instances
+export { UIElements_VaoCa };
 
 // Export a singleton instance of the UIElements class
 export const uiManager = new UIElements_VaoCa();
