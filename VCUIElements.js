@@ -491,16 +491,18 @@ class UIElements_VaoCa {
 
                 .image-action-btn {
                   color: white;
-                  border: none;
                   border-radius: 9999px;
                   width: 100%;
                   font-size: 1rem;
                  background-color: rgba(0, 0, 0, 0.6);
+                 backdrop-filter: blur(6px);
+                  -webkit-backdrop-filter: blur(6px);
                   cursor: pointer;
                   display: flex;
                   justify-content: center;
                   align-items: center;
                   transition: background-color 0.2s;
+                  border: 1px solid rgba(255, 255, 255, 0.3);
                 }
 
                 .image-action-btn:hover {
@@ -555,6 +557,7 @@ class UIElements_VaoCa {
                   /* Space between logos and divider */
                   z-index: 2001;
                   background-color: transparent;
+                  border: 1px solid rgba(255, 255, 255, 0.3);
                 }
 
                 /* NEW: Styles for individual Logos */
